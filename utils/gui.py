@@ -11,11 +11,13 @@ from utils.templates import DeviceTemplate
 
 class DuplicateOPIKeyError(Exception):
     """OPIs are identified by their keys and so this must be unique. This error indicates that an OPI key already exists."""
+
     pass
+
 
 # Following xml entry is used in opi_info.xml which holds the
 # collection of available device screens (entries) for the gui.
-template_opi_entry_xml_str="""
+template_opi_entry_xml_str = """
 <entry>
     <key>@{opi_key}</key>
     <value>
@@ -38,16 +40,21 @@ template_opi_entry_xml_str="""
 def _generate_opi_entry(device: DeviceInfo) -> ElementTree:
     """
     Generates an ElementTree entry for opi info based on a device info
-    
+
     Args:
         device: The device info representing the new device
-    
+
     Returns: ElementTree template based on the device info
     """
 
-    concrete_opi_xml_str = DeviceTemplate(template_opi_entry_xml_str).apply(device)
+    concrete_opi_xml_str = DeviceTemplate(template_opi_entry_xml_str).apply(
+        device
+    )
 
-    return etree.fromstring(concrete_opi_xml_str, etree.XMLParser(remove_blank_text=True))
+    return etree.fromstring(
+        concrete_opi_xml_str, etree.XMLParser(remove_blank_text=True)
+    )
+
 
 def add_device_opi_to_opi_info(device: DeviceInfo):
     """
@@ -73,5 +80,11 @@ def add_device_opi_to_opi_info(device: DeviceInfo):
     opis.append(_generate_opi_entry(device))
     with open(opi_info_path, "w") as f:
         f.write(
-            etree.tostring(opi_xml, pretty_print=True, encoding='UTF-8', xml_declaration=True, standalone="yes").decode()
+            etree.tostring(
+                opi_xml,
+                pretty_print=True,
+                encoding="UTF-8",
+                xml_declaration=True,
+                standalone="yes",
+            ).decode()
         )

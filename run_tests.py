@@ -1,4 +1,5 @@
-""" Runs tests associated with the IOC generation script """
+"""Runs tests associated with the IOC generation script"""
+
 import argparse
 import os
 import sys
@@ -24,17 +25,29 @@ def run_tests(test_reports_path=DEFAULT_TEST_LOCATION):
     for case in [DeviceInfoTests]:
         suite.addTests(loader.loadTestsFromTestCase(case))
 
-    return XMLTestRunner(output=str(os.path.join(test_reports_path)), stream=sys.stdout).run(suite).wasSuccessful()
+    return (
+        XMLTestRunner(
+            output=str(os.path.join(test_reports_path)), stream=sys.stdout
+        )
+        .run(suite)
+        .wasSuccessful()
+    )
 
 
 def main():
     """
     Routine to run when script executed from the command line
     """
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                     description="Runs tests for the IOC generation script")
-    parser.add_argument("--reports_path", type=str, help="The folder in which test reports should be stored",
-                        default=DEFAULT_TEST_LOCATION)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Runs tests for the IOC generation script",
+    )
+    parser.add_argument(
+        "--reports_path",
+        type=str,
+        help="The folder in which test reports should be stored",
+        default=DEFAULT_TEST_LOCATION,
+    )
 
     args = parser.parse_args()
     run_tests(args.reports_path)

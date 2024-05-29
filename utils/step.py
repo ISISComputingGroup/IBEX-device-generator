@@ -12,35 +12,25 @@ from utils.templates import TEMPLATES, fill_template_tree
 def create_submodule(device: DeviceInfo):
     epics_repo = RepoWrapper(EPICS)
 
-    epics_repo.create_submodule(device.support_name, device.github_repo_url, device.support_master_path)
+    epics_repo.create_submodule(
+        device.support_name, device.github_repo_url, device.support_master_path
+    )
 
     # Copy additional template files
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_submodule"),
         EPICS,
-        device.substitutions
+        device.substitutions,
     )
 
     add_to_makefile_list(EPICS_SUPPORT, "SUPPDIRS", device.support_name)
 
+
 def create_submodule_structure(device: DeviceInfo):
-    """
-    
-    """
-    # Run generator Perl script
-    # os.makedirs(device.support_master_path, exist_ok=True)
-    # cmd = [PERL, PERL_SUPPORT_GENERATOR, "-t", "streamSCPI", device.support_name]
-    # run_command(cmd, device.support_master_path)
-
-    # Append to Makefile
-    # with open(os.path.join(device.support_master_path, "Makefile"), "a") as makefile:
-    #     makefile.writelines(["\nioctests:\n", "\t.\\system_tests\\run_tests.bat\n"])
-
-    # Copy additional template files
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_support_submodule"),
         EPICS,
-        device.substitutions
+        device.substitutions,
     )
 
 
@@ -49,7 +39,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_1st_ioc"),
         EPICS,
-        device.substitutions
+        device.substitutions,
     )
 
     # For nth IOC apps
@@ -58,9 +48,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
         subs["ioc_number"] = "{:02d}".format(i)
 
         fill_template_tree(
-            os.path.join(TEMPLATES, "phase_add_nth_ioc"),
-            EPICS,
-            subs
+            os.path.join(TEMPLATES, "phase_add_nth_ioc"), EPICS, subs
         )
 
     # Add IOC to Makefile
@@ -69,30 +57,30 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     # Run make
     run_command(["make"], device.substitutions[IOC_PATH])
 
-def add_test_framework(device: DeviceInfo) -> None:
 
+def add_test_framework(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_test_framework"),
         EPICS,
-        device.substitutions
+        device.substitutions,
     )
 
-def add_lewis_emulator(device: DeviceInfo) -> None:
 
+def add_lewis_emulator(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_lewis_emulator"),
         EPICS,
-        device.substitutions
+        device.substitutions,
     )
 
-def add_opi_to_gui(device: DeviceInfo) -> None:
 
-    #TODO This step will fail to commit because the git hook changes additional files "dummy widgets". This will need to be fixed somehow
+def add_opi_to_gui(device: DeviceInfo) -> None:
+    # TODO This step will fail to commit because the git hook changes additional files "dummy widgets". This will need to be fixed somehow
 
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_opi_to_gui"),
         CLIENT_SRC,
-        device.substitutions
+        device.substitutions,
     )
 
     add_device_opi_to_opi_info(device)

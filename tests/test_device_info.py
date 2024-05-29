@@ -1,16 +1,35 @@
-
 from os.path import join
 from unittest import TestCase
 
 import utils.substitution_keys as keys_file
 from paths import EPICS, EPICS_SUPPORT
-from utils.device_info import (DeviceInfo, InvalidDeviceNameError,
-                               InvalidIOCNameError, get_year)
-from utils.substitution_keys import DEVICE_COUNT, DEVICE_DATABASE_NAME, DEVICE_PROTOCOL_NAME, DEVICE_SUPPORT_MODULE_NAME, GITHUB_REPO_NAME, IOC_APP_PATH, IOC_NAME, DEVICE_NAME, IOC_PATH, LEWIS_DEVICE_CLASS_NAME, LEWIS_DEVICE_NAME, OPI_FILE_NAME, OPI_KEY, SUPPORT_MASTER_PATH, SUPPORT_PATH, YEAR
+from utils.device_info import (
+    DeviceInfo,
+    InvalidDeviceNameError,
+    InvalidIOCNameError,
+    get_year,
+)
+from utils.substitution_keys import (
+    DEVICE_COUNT,
+    DEVICE_DATABASE_NAME,
+    DEVICE_NAME,
+    DEVICE_PROTOCOL_NAME,
+    DEVICE_SUPPORT_MODULE_NAME,
+    GITHUB_REPO_NAME,
+    IOC_APP_PATH,
+    IOC_NAME,
+    IOC_PATH,
+    LEWIS_DEVICE_CLASS_NAME,
+    LEWIS_DEVICE_NAME,
+    OPI_FILE_NAME,
+    OPI_KEY,
+    SUPPORT_MASTER_PATH,
+    SUPPORT_PATH,
+    YEAR,
+)
 
 
 class DeviceInfoTests(TestCase):
-
     def setUp(self):
         self.device = DeviceInfo("ND1", "New Device 1", device_count=4)
 
@@ -18,34 +37,50 @@ class DeviceInfoTests(TestCase):
         # -> Check all vars in substitution_keys are used
         for name, value in vars(keys_file).items():
             if not name.startswith("__"):
-                self.assertIn(value, self.device.substitutions, msg=f"Key '{name}' ('{value}') is missing from the device info substitutions.")
+                self.assertIn(
+                    value,
+                    self.device.substitutions,
+                    msg=f"Key '{name}' ('{value}') is missing from the device info substitutions.",
+                )
         # <- Check all keys in device info substitutions exists in substitution_keys
-        values_in_substitutions_file = [value for name, value in vars(keys_file).items() if not name.startswith("__")]
+        values_in_substitutions_file = [
+            value
+            for name, value in vars(keys_file).items()
+            if not name.startswith("__")
+        ]
         for key, value in self.device.substitutions.items():
-            self.assertIn(key, values_in_substitutions_file, msg=f"Deice info substitutions contains a key ('{key}') that is not present in utils.substitution_keys")
+            self.assertIn(
+                key,
+                values_in_substitutions_file,
+                msg=f"Deice info substitutions contains a key ('{key}') that is not present in utils.substitution_keys",
+            )
 
     def test_device_info_substitutions_are_correct(self):
         expected_substitutions = {
-            IOC_NAME:                   "ND1",
-            DEVICE_NAME:                "New Device 1",
+            IOC_NAME: "ND1",
+            DEVICE_NAME: "New Device 1",
             DEVICE_SUPPORT_MODULE_NAME: "new_device_1",
-            LEWIS_DEVICE_NAME:          "new_device_1",
-            DEVICE_DATABASE_NAME:       "new_device_1",
-            DEVICE_PROTOCOL_NAME:       "new_device_1",
-            LEWIS_DEVICE_CLASS_NAME:    "NewDevice1",
-            SUPPORT_PATH:               join(EPICS_SUPPORT, "new_device_1"),
-            SUPPORT_MASTER_PATH:        join(EPICS_SUPPORT, "new_device_1", "master"),
-            GITHUB_REPO_NAME:           "EPICS-New_Device_1",
-            DEVICE_COUNT:               4,
-            IOC_PATH:                   join(EPICS, "ioc", "master", "ND1"),
-            IOC_APP_PATH:               join(EPICS, "ioc", "master", "ND1", "ND1App"),
-            OPI_FILE_NAME:              "new_device_1",
-            OPI_KEY:                    "ND1",
-            YEAR:                       get_year()
+            LEWIS_DEVICE_NAME: "new_device_1",
+            DEVICE_DATABASE_NAME: "new_device_1",
+            DEVICE_PROTOCOL_NAME: "new_device_1",
+            LEWIS_DEVICE_CLASS_NAME: "NewDevice1",
+            SUPPORT_PATH: join(EPICS_SUPPORT, "new_device_1"),
+            SUPPORT_MASTER_PATH: join(EPICS_SUPPORT, "new_device_1", "master"),
+            GITHUB_REPO_NAME: "EPICS-New_Device_1",
+            DEVICE_COUNT: 4,
+            IOC_PATH: join(EPICS, "ioc", "master", "ND1"),
+            IOC_APP_PATH: join(EPICS, "ioc", "master", "ND1", "ND1App"),
+            OPI_FILE_NAME: "new_device_1",
+            OPI_KEY: "ND1",
+            YEAR: get_year(),
         }
 
         for key, value in expected_substitutions.items():
-            self.assertEqual(self.device.substitutions[key], value, msg=f"Values for key '{key}' are incosistent.")
+            self.assertEqual(
+                self.device.substitutions[key],
+                value,
+                msg=f"Values for key '{key}' are incosistent.",
+            )
 
     def test_invalid_name_raises_error(self):
         with self.assertRaises(InvalidIOCNameError):

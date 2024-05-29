@@ -18,7 +18,9 @@ class DeviceTemplate(Template):
         return self.substitute(device.substitutions)
 
 
-def fill_template_file(template: str, destination: str, substitutions: dict[str, str]):
+def fill_template_file(
+    template: str, destination: str, substitutions: dict[str, str]
+):
     """
     Take template file at location and write it out to destination with the substitutions
 
@@ -40,7 +42,9 @@ def fill_template_file(template: str, destination: str, substitutions: dict[str,
             destination_file.write(result)
 
 
-def fill_template_tree(src: str, dst: str, substitutions: dict[str, str]) -> str:
+def fill_template_tree(
+    src: str, dst: str, substitutions: dict[str, str]
+) -> str:
     """
     Copies the template files located in src directory recursively into the destination directory dst
     substituting all placeholders within directory names and file contents.
@@ -79,7 +83,9 @@ def fill_template_tree(src: str, dst: str, substitutions: dict[str, str]) -> str
 
 def use_template(template_path, substitutions, destination_root=EPICS):
     templates = os.path.join(TEMPLATES, template_path)
-    substituted_template_path = DeviceTemplate(template_path).substitute(substitutions)
+    substituted_template_path = DeviceTemplate(template_path).substitute(
+        substitutions
+    )
     destination = os.path.join(destination_root, substituted_template_path)
 
     fill_template_tree(templates, destination, substitutions)
