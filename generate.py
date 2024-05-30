@@ -11,6 +11,7 @@ from utils.github_requests import (
     create_github_repository,
     grant_permissions_for_github_repository,
 )
+from utils.placeholders import DEVICE_NAME, SUPPORT_MASTER_PATH
 from utils.step import (
     add_lewis_emulator,
     add_opi_to_gui,
@@ -34,7 +35,7 @@ class IBEXDeviceGenerator:
         self.use_git = use_git
         self.github_token = github_token
         self.ticket_num = ticket_num
-        self.ticket_branch = f"Ticket{self.ticket_num}_Add_IOC_{self.device.device_name.replace(' ', '_')}"
+        self.ticket_branch = f"Ticket{self.ticket_num}_Add_IOC_{self.device[DEVICE_NAME].replace(' ', '_')}"
         self.retry = retry
 
     def run(self):
@@ -64,7 +65,7 @@ class IBEXDeviceGenerator:
         )
 
         self.add_step(
-            self.device.support_master_path,
+            self.device[SUPPORT_MASTER_PATH],
             "Add template file structure in support submodule",
             create_submodule_structure,
             self.device,
@@ -75,14 +76,14 @@ class IBEXDeviceGenerator:
         )
 
         self.add_step(
-            self.device.support_master_path,
+            self.device[SUPPORT_MASTER_PATH],
             "Add device to test framework",
             add_test_framework,
             self.device,
         )
 
         self.add_step(
-            self.device.support_master_path,
+            self.device[SUPPORT_MASTER_PATH],
             "Add Lewis emulator",
             add_lewis_emulator,
             self.device,

@@ -1,7 +1,7 @@
 from os.path import join
 from unittest import TestCase
 
-import utils.substitution_keys as keys_file
+import utils.placeholders as keys_file
 from paths import EPICS, EPICS_SUPPORT
 from utils.device_info import (
     DeviceInfo,
@@ -9,7 +9,7 @@ from utils.device_info import (
     InvalidIOCNameError,
     get_year,
 )
-from utils.substitution_keys import (
+from utils.placeholders import (
     DEVICE_COUNT,
     DEVICE_DATABASE_NAME,
     DEVICE_NAME,
@@ -39,7 +39,7 @@ class DeviceInfoTests(TestCase):
             if not name.startswith("__"):
                 self.assertIn(
                     value,
-                    self.device.substitutions,
+                    self.device,
                     msg=f"Key '{name}' ('{value}') is missing from the device info substitutions.",
                 )
         # <- Check all keys in device info substitutions exists in substitution_keys
@@ -48,7 +48,7 @@ class DeviceInfoTests(TestCase):
             for name, value in vars(keys_file).items()
             if not name.startswith("__")
         ]
-        for key, value in self.device.substitutions.items():
+        for key, value in self.device.items():
             self.assertIn(
                 key,
                 values_in_substitutions_file,
@@ -77,7 +77,7 @@ class DeviceInfoTests(TestCase):
 
         for key, value in expected_substitutions.items():
             self.assertEqual(
-                self.device.substitutions[key],
+                self.device[key],
                 value,
                 msg=f"Values for key '{key}' are incosistent.",
             )

@@ -17,6 +17,7 @@ class DuplicateOPIKeyError(Exception):
 
 # Following xml entry is used in opi_info.xml which holds the
 # collection of available device screens (entries) for the gui.
+# fmt: off
 template_opi_entry_xml_str = """
 <entry>
     <key>@{opi_key}</key>
@@ -35,6 +36,7 @@ template_opi_entry_xml_str = """
     </value>
 </entry>
 """
+# fmt: on
 
 
 def _generate_opi_entry(device: DeviceInfo) -> ElementTree:
@@ -73,7 +75,7 @@ def add_device_opi_to_opi_info(device: DeviceInfo):
         opi_xml = etree.parse(f, etree.XMLParser(remove_blank_text=True))
 
     opis = opi_xml.find("opis")
-    opi_key = device.substitutions[OPI_KEY]
+    opi_key = device[OPI_KEY]
     if any(entry.find("key").text == opi_key for entry in opis):
         raise DuplicateOPIKeyError(f"OPI with key '{opi_key}' already exists.")
 

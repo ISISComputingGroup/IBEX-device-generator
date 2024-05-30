@@ -1,10 +1,9 @@
-"""Helper to generate information about the device based on the name used in device setup"""
-
 import datetime
 from os.path import join
+from typing import Any
 
 from paths import EPICS, EPICS_SUPPORT
-from utils.substitution_keys import (
+from utils.placeholders import (
     DEVICE_COUNT,
     DEVICE_DATABASE_NAME,
     DEVICE_NAME,
@@ -42,19 +41,22 @@ class InvalidIOCCountError(Exception):
     pass
 
 
-class DeviceInfo:
-    """ "
+class DeviceInfo(dict):
+    """
     Generates info used in setting up a device under IBEX based on the name
     """
 
     def __init__(self, ioc_name: str, device_name: str, device_count: int = 1):
         """
         Args:
-            ioc_name: The name of the IOC (Must be between 1 and 8 alphanumeric characters)
+            ioc_name: The name of the IOC
+                (Must be between 1 and 8 alphanumeric characters)
             device_name: The longer, more descriptive name of the device.
 
         Raises:
             InvalidIOCNameError: if IOC name is invalid.
+            InvalidDeviceNameError: if device name is invalid
+            InvalidIOCCountError: if device count is invalid
         """
         if not is_valid_ioc_name(ioc_name):
             raise InvalidIOCNameError()
@@ -65,100 +67,49 @@ class DeviceInfo:
         if not is_valid_device_count(device_count):
             raise InvalidIOCCountError()
 
-        # Basic info
-        self._ioc_name = ioc_name
-        self._device_name = device_name
-        self._device_name_lower_underscores = device_name.lower().replace(
-            " ", "_"
-        )
+        device_name_lower_underscores = device_name.lower().replace(" ", "_")
 
-        # For EPICS/ioc/master
-        self._ioc_path = join(EPICS, "ioc", "master", self._ioc_name)
+        # Set up the substitutions according to the device's details
 
-        # For EPICS/support/<device>/master
-        self._support_name = device_name.lower().replace(" ", "_")
-        self._support_path = join(EPICS_SUPPORT, self._support_name)
-        self._support_master_path = join(self._support_path, "master")
+        # fmt: off
+        self[IOC_NAME]                      = ioc_name # noqa
+        self[DEVICE_NAME]                   = device_name # noqa
+        self[DEVICE_COUNT]                  = device_count # noqa
+        self[DEVICE_SUPPORT_MODULE_NAME]    = device_name_lower_underscores # noqa
+        self[LEWIS_DEVICE_NAME]             = device_name_lower_underscores # noqa
+        self[LEWIS_DEVICE_CLASS_NAME]       = device_name.title().replace(" ", "") # noqa
+        self[DEVICE_DATABASE_NAME]          = device_name_lower_underscores # noqa
+        self[DEVICE_PROTOCOL_NAME]          = device_name_lower_underscores # noqa
+        self[SUPPORT_PATH]                  = join(EPICS_SUPPORT, device_name_lower_underscores) # noqa
+        self[SUPPORT_MASTER_PATH]           = join(EPICS_SUPPORT, device_name_lower_underscores, "master") # noqa
+        self[GITHUB_REPO_NAME]              = f"EPICS-{device_name.replace(' ', '_')}" # noqa
+        self[IOC_PATH]                      = join(EPICS, "ioc", "master", ioc_name) # noqa
+        self[IOC_APP_PATH]                  = join(EPICS, "ioc", "master", ioc_name, f"{ioc_name}App") # noqa
+        self[OPI_FILE_NAME]                 = device_name_lower_underscores # noqa
+        self[OPI_KEY]                       = ioc_name # noqa
+        self[YEAR]                          = get_year() # noqa
+        # fmt: on
 
-        # For lewis emulator code
-        self._lewis_device_class_name = device_name.title().replace(" ", "")
-
-        self._device_count = device_count
-
-        # TODO add repo name
-
-        self._substitutions = {
-            IOC_NAME: ioc_name,
-            DEVICE_NAME: device_name,
-            DEVICE_SUPPORT_MODULE_NAME: self._device_name_lower_underscores,
-            LEWIS_DEVICE_NAME: self._device_name_lower_underscores,
-            DEVICE_DATABASE_NAME: self._device_name_lower_underscores,
-            DEVICE_PROTOCOL_NAME: self._device_name_lower_underscores,
-            LEWIS_DEVICE_CLASS_NAME: device_name.title().replace(" ", ""),
-            SUPPORT_PATH: join(
-                EPICS_SUPPORT, self.device_name_lower_underscores
-            ),
-            SUPPORT_MASTER_PATH: join(
-                EPICS_SUPPORT, self.device_name_lower_underscores, "master"
-            ),
-            GITHUB_REPO_NAME: f"EPICS-{device_name.replace(' ', '_')}",
-            DEVICE_COUNT: device_count,
-            IOC_PATH: join(EPICS, "ioc", "master", ioc_name),
-            IOC_APP_PATH: join(
-                EPICS, "ioc", "master", ioc_name, f"{ioc_name}App"
-            ),
-            OPI_FILE_NAME: self._device_name_lower_underscores,
-            OPI_KEY: ioc_name,
-            YEAR: get_year(),
-        }
-
-    @property
-    def device_name_lower_underscores(self):
-        return self._device_name.lower().replace(" ", "_")
-
-    @property
-    def support_name(self):
-        return self._support_name
-
-    @property
-    def support_path(self):
-        return self._support_path
-
-    @property
-    def support_master_path(self):
-        return self._support_master_path
+    def __setitem__(self, key: Any, value: Any):
+        if self.get(key):
+            # Prevent modifying values
+            raise Exception(
+                "Attempting to modify value in device info dictionary"
+            )
+        else:
+            super().__setitem__(key, value)
 
     @property
     def github_repo_url(self):
-        return f"https://github.com/ISISComputingGroup/{self.substitutions[GITHUB_REPO_NAME]}.git"
-
-    @property
-    def substitutions(self):
-        """
-        Returns: The name of the IOC based on the input name. Must be between 1 and 8 characters
-        """
-        return self._substitutions
-
-    @property
-    def ioc_name(self):
-        """
-        Returns: The name of the device that can be different to the IOC name.
-        """
-        return self._ioc_name
-
-    @property
-    def device_name(self):
-        """
-        Returns: The name of the device that can be different to the IOC name.
-        """
-        return self._device_name
+        return f"https://github.com/ISISComputingGroup/{self[GITHUB_REPO_NAME]}.git"
 
     def ioc_indexed_name(self, index: int) -> str:
         """
         Args:
-            index: The IOC application name for the given index
+            index: The index of the application
 
-        Returns: The name of the application "${ioc_name}-IOC-${ioc_index}" e.g. ABC-IOC-01
+        Returns: The name of the application name for the given index
+            "${ioc_name}-IOC-${ioc_index}" e.g. ABC-IOC-01
         """
         if not 0 < index < 100:
             raise InvalidIOCCountError()
@@ -167,10 +118,14 @@ class DeviceInfo:
 
     def ioc_boot_path(self, index: int):
         """
-        Returns:
+        Args:
+            index: The index of the application
+
+        Returns: The path to the boot folder for ioc application
+            at the given index
         """
         return join(
-            self.substitutions[IOC_PATH],
+            self[IOC_PATH],
             "iocBoot",
             self.ioc_indexed_name(index),
         )
@@ -180,7 +135,7 @@ class DeviceInfo:
         Returns:
         """
         return join(
-            self.substitutions[IOC_PATH], f"{self.ioc_indexed_name(index)}App"
+            self[IOC_PATH], f"{self.ioc_indexed_name(index)}App"
         )
 
 

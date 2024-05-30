@@ -6,6 +6,7 @@ from utils.device_info import DEVICE_COUNT, IOC_PATH, DeviceInfo
 from utils.file_system import add_to_makefile_list
 from utils.git_utils import RepoWrapper
 from utils.gui import add_device_opi_to_opi_info
+from utils.placeholders import DEVICE_SUPPORT_MODULE_NAME, IOC_NAME, SUPPORT_MASTER_PATH
 from utils.templates import TEMPLATES, fill_template_tree
 
 
@@ -13,24 +14,24 @@ def create_submodule(device: DeviceInfo):
     epics_repo = RepoWrapper(EPICS)
 
     epics_repo.create_submodule(
-        device.support_name, device.github_repo_url, device.support_master_path
+        device[DEVICE_SUPPORT_MODULE_NAME], device.github_repo_url, device[SUPPORT_MASTER_PATH]
     )
 
     # Copy additional template files
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_submodule"),
         EPICS,
-        device.substitutions,
+        device,
     )
 
-    add_to_makefile_list(EPICS_SUPPORT, "SUPPDIRS", device.support_name)
+    add_to_makefile_list(EPICS_SUPPORT, "SUPPDIRS", device[DEVICE_SUPPORT_MODULE_NAME])
 
 
 def create_submodule_structure(device: DeviceInfo):
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_support_submodule"),
         EPICS,
-        device.substitutions,
+        device,
     )
 
 
@@ -39,12 +40,12 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_1st_ioc"),
         EPICS,
-        device.substitutions,
+        device,
     )
 
     # For nth IOC apps
-    for i in range(2, device.substitutions[DEVICE_COUNT] + 1):
-        subs = device.substitutions
+    for i in range(2, device[DEVICE_COUNT] + 1):
+        subs = device
         subs["ioc_number"] = "{:02d}".format(i)
 
         fill_template_tree(
@@ -52,17 +53,17 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
         )
 
     # Add IOC to Makefile
-    add_to_makefile_list(IOC_ROOT, "IOCDIRS", device.ioc_name)
+    add_to_makefile_list(IOC_ROOT, "IOCDIRS", device[IOC_NAME])
 
     # Run make
-    run_command(["make"], device.substitutions[IOC_PATH])
+    run_command(["make"], device[IOC_PATH])
 
 
 def add_test_framework(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_test_framework"),
         EPICS,
-        device.substitutions,
+        device,
     )
 
 
@@ -70,7 +71,7 @@ def add_lewis_emulator(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_lewis_emulator"),
         EPICS,
-        device.substitutions,
+        device,
     )
 
 
@@ -80,7 +81,7 @@ def add_opi_to_gui(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_opi_to_gui"),
         CLIENT_SRC,
-        device.substitutions,
+        device,
     )
 
     add_device_opi_to_opi_info(device)

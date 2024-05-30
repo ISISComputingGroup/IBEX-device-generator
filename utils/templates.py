@@ -15,7 +15,7 @@ class DeviceTemplate(Template):
 
     def apply(self, device: DeviceInfo) -> str:
         """Apply device substitutions to a template."""
-        return self.substitute(device.substitutions)
+        return self.substitute(device)
 
 
 def fill_template_file(

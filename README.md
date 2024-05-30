@@ -53,7 +53,7 @@ The templates for the file structure generation can be found in the `templates` 
 
 ### Placeholders
 
-For a fill list of placeholders see [substitution_keys.py](./utils/substitution_keys.py).
+For a fill list of placeholders see [placeholderss.py](./utils/placeholderss.py).
 
 Placeholders in the templates can be anywhere (including file names, directory names or file content). They are preceeded by the '@' delimiter. When the placeholder is not followed by a space use @{placeholder}.
 

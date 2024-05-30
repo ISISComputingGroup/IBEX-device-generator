@@ -30,7 +30,7 @@ def create_github_repository(device: DeviceInfo, github_token: str) -> None:
             "Authorization": f"token {github_token}",
         },
         json={
-            "name": device.substitutions[GITHUB_REPO_NAME],
+            "name": device[GITHUB_REPO_NAME],
             "visibility": "public",
             "auto_init": True,
         },
@@ -92,13 +92,13 @@ def grant_permissions_for_github_repository(
         github_token,
         "ICP-Write",
         "push",
-        device.substitutions[GITHUB_REPO_NAME],
+        device[GITHUB_REPO_NAME],
     )
     grant_permission(
         github_token,
         "ICP-WriteAndMerge",
         "maintain",
-        device.substitutions[GITHUB_REPO_NAME],
+        device[GITHUB_REPO_NAME],
     )
 
 
