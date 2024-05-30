@@ -1,4 +1,4 @@
-"""Standard system paths used in the IBEX distribution"""
+"""Standard system paths used in the IBEX distribution."""
 
 from os import getenv
 from os.path import abspath, dirname, join

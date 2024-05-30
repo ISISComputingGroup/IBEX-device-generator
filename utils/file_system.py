@@ -1,21 +1,21 @@
-"""Utilities for interacting with the file system"""
+"""Utilities for interacting with the file system."""
 
 import logging
 from os.path import join
 
 
 def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
-    """
-    Check if IOC name has already been added to support/Makefile
-    or ioc/master/Makefile, and add it at the end of IOC | SUPP DIRS list
-    if it isn't there already.
+    """Add entry to prefixed list in llist of strings.
+
+    Check if 'list_name += entry' already exists in text and add it if not.
 
     Args:
         text: The original text
         list_name: The name of the list to add to
         entry: The entry to add to the list
 
-    Returns: The original text with the requested entry added to the named list
+    Returns:
+        The original text with the requested entry added to the named list
 
     """
     new_text = []
@@ -40,7 +40,8 @@ def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
 
 
 def add_to_makefile_list(directory: str, list_name: str, entry: str) -> None:
-    """
+    """Add entry to prefixed list in a Makefile.
+
     Adds an entry to a list in a makefile. Finds the last line of the form
     "list_name += ..." and puts a new line containing the entry after it
 
@@ -48,6 +49,7 @@ def add_to_makefile_list(directory: str, list_name: str, entry: str) -> None:
         directory: Directory containing the makefile
         list_name: The name of the list in the makefile to append to
         entry: The entry to add to the list
+
     """
     logging.info(
         "Adding {} to list {} in Makefile for directory {}".format(

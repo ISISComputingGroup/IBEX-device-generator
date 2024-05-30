@@ -1,3 +1,5 @@
+"""Test device info."""
+
 from os.path import join
 from unittest import TestCase
 
@@ -30,10 +32,14 @@ from utils.placeholders import (
 
 
 class DeviceInfoTests(TestCase):
+    """Test Device Info."""
+
     def setUp(self) -> None:
+        """Create a device."""
         self.device = DeviceInfo("ND1", "New Device 1", device_count=4)
 
     def test_all_keys_present_in_device_info_substitutions(self) -> None:
+        """Check that all placeholders are used as keys in the device info."""
         # -> Check all vars in substitution_keys are used
         for name, value in vars(keys_file).items():
             if not name.startswith("__"):
@@ -63,6 +69,7 @@ class DeviceInfoTests(TestCase):
             )
 
     def test_device_info_substitutions_are_correct(self) -> None:
+        """Test substitution correctness."""
         expected_substitutions = {
             IOC_NAME: "ND1",
             DEVICE_NAME: "New Device 1",
@@ -90,6 +97,7 @@ class DeviceInfoTests(TestCase):
             )
 
     def test_invalid_name_raises_error(self) -> None:
+        """Test argument validations."""
         with self.assertRaises(InvalidIOCNameError):
             # Non-alphanumeric character
             DeviceInfo("ND 1", "New Device 1")

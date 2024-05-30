@@ -1,3 +1,5 @@
+"""Main file."""
+
 import logging
 
 from rich.logging import RichHandler
@@ -23,6 +25,8 @@ from utils.step import (
 
 
 class IBEXDeviceGenerator:
+    """IBEX device generator."""
+
     def __init__(
         self,
         device: DeviceInfo,
@@ -31,6 +35,7 @@ class IBEXDeviceGenerator:
         ticket_num: int,
         retry: bool = True,
     ) -> None:
+        """Create a device generator instance."""
         device_name_underscores = device[DEVICE_NAME].replace(" ", "_")
         ticket_branch = f"Ticket{ticket_num}_Add_IOC_{device_name_underscores}"
 
@@ -42,6 +47,7 @@ class IBEXDeviceGenerator:
         self.retry = retry
 
     def run(self) -> None:
+        """Run the generator."""
         # Generator steps below
 
         self.add_step(
@@ -102,6 +108,19 @@ class IBEXDeviceGenerator:
         *args,
         **kwargs,
     ) -> None:
+        """Add a generator step.
+
+        Each step asks the user before running. This also takes care of
+        commiting if use git is specified.
+
+        Args:
+            repo_path: path to the repository being modified by this step.
+            commit_msg: the commit message
+            action: the function to execute as this step
+            *args: any positional arguments for the action
+            **kwargs: any keywoprd arguments for the action
+
+        """
         if not Confirm.ask(f"Do '{commit_msg}'?", default="y"):
             logging.info(
                 ":right_arrow:  Skipping step.", extra={"markup": True}

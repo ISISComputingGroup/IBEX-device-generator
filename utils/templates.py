@@ -1,10 +1,9 @@
-"""Paths to use for template files"""
+"""Template handling."""
 
 import logging
 import os
 from string import Template
 
-from paths import EPICS, TEMPLATES
 from utils.device_info import DeviceInfo
 
 
@@ -21,13 +20,20 @@ class DeviceTemplate(Template):
 def fill_template_file(
     template: str, destination: str, substitutions: dict[str, str]
 ) -> None:
-    """
+    """Create a new file based on a template and substitutions.
+
     Take template file at location and write it out to destination
     with the substitutions
 
-    Raises KeyError if placeholders are missing from mapping
-    """
+    Args:
+        template: template file path
+        destination: where to put new file
+        substitutions: substitutions for the template file's content
 
+    Raises:
+        KeyError if placeholders are missing from mapping
+
+    """
     logging.debug(
         (
             f"Using template at '{template}' with substitutions"
@@ -49,7 +55,8 @@ def fill_template_file(
 def fill_template_tree(
     src: str, dst: str, substitutions: dict[str, str]
 ) -> str:
-    """
+    """Recursively create new files based on a template directory.
+
     Copies the template files located in src directory recursively into
     the destination directory dst substituting all placeholders within
     directory names and file contents.
@@ -62,8 +69,8 @@ def fill_template_tree(
 
     Returns:
         List of absolute file paths that were written out.
-    """
 
+    """
     logging.debug(
         (
             f"Using templates in directory '{src}' with substitutions"
@@ -88,16 +95,3 @@ def fill_template_tree(
             result_files.append(d)
 
     return result_files
-
-
-def use_template(
-    template_path: str, substitutions: str, destination_root: str = EPICS
-) -> None:
-    templates = os.path.join(TEMPLATES, template_path)
-    substituted_template_path = DeviceTemplate(template_path).substitute(
-        substitutions
-    )
-    destination = os.path.join(destination_root, substituted_template_path)
-
-    fill_template_tree(templates, destination, substitutions)
-    print(f"location: {destination}")

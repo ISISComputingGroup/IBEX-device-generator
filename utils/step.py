@@ -1,3 +1,5 @@
+"""Steps of the generator."""
+
 import os
 
 import utils.placeholders as p
@@ -12,6 +14,7 @@ from utils.templates import TEMPLATES, fill_template_tree
 
 
 def create_submodule(device: DeviceInfo) -> None:
+    """Add a new submodule to EPICS top."""
     epics_repo = RepoWrapper(EPICS)
 
     epics_repo.create_submodule(
@@ -33,6 +36,7 @@ def create_submodule(device: DeviceInfo) -> None:
 
 
 def create_submodule_structure(device: DeviceInfo) -> None:
+    """Add basic files into support module folder."""
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_support_submodule"),
         EPICS,
@@ -41,6 +45,7 @@ def create_submodule_structure(device: DeviceInfo) -> None:
 
 
 def create_ioc_from_template(device: DeviceInfo) -> None:
+    """Add basic files into ioc/master's relevant directory for the device."""
     # For 1st and main IOC app
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_1st_ioc"),
@@ -65,6 +70,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
 
 
 def add_test_framework(device: DeviceInfo) -> None:
+    """Add files for testing device in support directory."""
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_test_framework"),
         EPICS,
@@ -73,6 +79,7 @@ def add_test_framework(device: DeviceInfo) -> None:
 
 
 def add_lewis_emulator(device: DeviceInfo) -> None:
+    """Add lewis emulator files in support directory."""
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_lewis_emulator"),
         EPICS,
@@ -81,6 +88,7 @@ def add_lewis_emulator(device: DeviceInfo) -> None:
 
 
 def add_opi_to_gui(device: DeviceInfo) -> None:
+    """Add basic OPI with device key and add this into opi_info.xml."""
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_opi_to_gui"),
         CLIENT_SRC,

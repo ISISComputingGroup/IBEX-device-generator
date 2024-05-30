@@ -7,12 +7,26 @@ exclude = [
 line-length = 79
 
 [lint]
-# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
-# overlap with the use of a formatter, like Black, but we can override this behavior by
-# explicitly adding the rule.
-extend-select = ["I", "E501", "ANN001", "ANN201", "ANN202", "ANN204", "ANN205", "ANN206"]
+extend-select = [
+    "N",  # pep8-naming
+    "D",  # pydocstyle
+    "I",  # isort (for imports)
+    "E501",  # Line too long ({width} > {limit})
+    "ANN001",  # Missing type annotation for function argument {name}
+    "ANN201",  # Missing return type annotation for public function {name}
+    "ANN202",  # Missing return type annotation for private function {name}
+    "ANN204",  # Missing return type annotation for special method {name}
+    "ANN205",  # Missing return type annotation for staticmethod {name}
+    "ANN206",  # Missing return type annotation for classmethod {name}
+]
+ignore = [
+    "D203",  # 1 blank line required before class docstring
+    "D213",  # Multi-line docstring summary should start at the second line
+    "D407",  # Missing dashed underline after section ("{name}")
+]
 
 [format]
 quote-style = "double"
 indent-style = "space"
 docstring-code-format = true
+line-ending = "cr-lf"

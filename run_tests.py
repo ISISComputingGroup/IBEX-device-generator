@@ -1,4 +1,4 @@
-"""Runs tests associated with the IOC generation script"""
+"""Run tests associated with the IOC generation script."""
 
 import argparse
 import os
@@ -13,14 +13,14 @@ DEFAULT_TEST_LOCATION = "test-reports\\"
 
 
 def run_tests(test_reports_path: str = DEFAULT_TEST_LOCATION) -> None:
-    """
-    Runs the test suite
+    """Run the test suite.
 
     Args:
         test_reports_path: Path to test reports
 
     Returns:
         True if the tests passed, false otherwise
+
     """
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
@@ -37,9 +37,7 @@ def run_tests(test_reports_path: str = DEFAULT_TEST_LOCATION) -> None:
 
 
 def main() -> None:
-    """
-    Routine to run when script executed from the command line
-    """
+    """Routine to run when script executed from the command line."""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="Runs tests for the IOC generation script",

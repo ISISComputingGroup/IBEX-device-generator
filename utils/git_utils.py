@@ -1,6 +1,6 @@
-"""
-Utilities for interacting with Git. This is sometimes done via the command line
-and other times the PythonGit API.
+"""Utilities for interacting with Git.
+
+This is sometimes done via the command line and other times the PythonGit API.
 """
 
 import logging
@@ -22,17 +22,19 @@ from utils.github import EPICS_REPO_NAME, github_repo_url
 
 
 class FailedToSwitchBranchError(GitError):
+    """Switching branch failed."""
+
     pass
 
 
 class WrongRepositoryOriginError(GitError):
+    """Expected origin and actual origin mismatch."""
+
     pass
 
 
 class RepoWrapper(Repo):
-    """
-    A wrapper around a git repository
-    """
+    """A wrapper around a git repository."""
 
     def __init__(
         self,
@@ -40,7 +42,8 @@ class RepoWrapper(Repo):
         origin: str = github_repo_url(EPICS_REPO_NAME),
         init: bool = False,
     ) -> None:
-        """
+        """Attach to existing git repository or initialise a new.
+
         Args:
             path: The path to the git repository
             origin: The url to repo's remote origin. During initialisation if
@@ -50,6 +53,7 @@ class RepoWrapper(Repo):
                 remote origin.
             init: If True git repo is initialised at directory if it
                 doesn't exist.
+
         """
         try:
             super().__init__(path)
@@ -70,11 +74,11 @@ class RepoWrapper(Repo):
                 raise error
 
     def switch(self, branch: str = "main") -> None:
-        """
-        Switch to branch. Creates it if needed.
+        """Switch to branch. Creates it if needed.
 
         Args:
             branch: Name of the branch to switch to. Defaults to 'main'
+
         """
         try:
             logging.info(
@@ -97,13 +101,12 @@ class RepoWrapper(Repo):
             )
 
     def commit_all(self, msg: str) -> None:
-        """
-        Commits all changes and untracked files in the repository.
+        """Commit all changes and untracked files in the repository.
 
         Args:
-            msg: the commit message
-        """
+            msg: The commit message
 
+        """
         logging.debug(
             (
                 f"Attempting to commit all changes and untracked files in"
@@ -122,11 +125,13 @@ class RepoWrapper(Repo):
             )
 
     def create_submodule(self, name: str, url: str, path: str) -> None:
-        """
+        """Create submodule in this repository.
+
         Args:
             name: Name of the submodule
             url: Url to the submodule repo
             path: Local system path to the submodule
+
         """
         try:
             branch = "main"
@@ -162,6 +167,15 @@ class RepoWrapper(Repo):
 def commit_changes(
     repo_path: str, branch: str, msg: str, confirm_commit: bool = True
 ) -> Generator[RepoWrapper, None, None]:
+    """Switches to a branch and makes commit.
+
+    Args:
+        repo_path: Path to the repo
+        branch: branch to commit on
+        msg: commit message
+        confirm_commit: prompt the user to confirm the commit
+
+    """
     repo = RepoWrapper(repo_path)
 
     if repo.is_dirty(untracked_files=True) or (

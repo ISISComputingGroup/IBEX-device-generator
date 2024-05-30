@@ -1,4 +1,5 @@
-"""
+"""Placeholders within the template files, file and directory names.
+
 List of all the possible placeholders in the template files.
 All of these keys should be present in the device info substitutions.
 """

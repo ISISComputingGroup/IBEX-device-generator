@@ -1,10 +1,8 @@
-"""Helper functions dealing with date"""
+"""Helper functions dealing with date."""
 
 import datetime
 
 
 def get_year() -> str:
-    """
-    Returns: The current year formatted as a string
-    """
+    """Get current year."""
     return str(datetime.datetime.now().year)

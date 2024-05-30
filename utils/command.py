@@ -1,3 +1,5 @@
+"""Execute commands in the terminal programatically."""
+
 import logging
 import subprocess
 from os import PathLike, devnull
@@ -9,12 +11,15 @@ StrOrBytesPath: TypeAlias = str | bytes | PathLike[str] | PathLike[bytes]
 def run_command(
     command: StrOrBytesPath | Sequence[StrOrBytesPath], working_dir: str
 ) -> int:
-    """
-    Runs a command using subprocess. Waits for completion
+    """Run a command using subprocess, waits for completion.
 
     Args:
         command: A list defining the command to run
         working_dir: The directory to run the command in
+
+    Returns:
+        The exit code after running the command
+
     """
     logging.info(
         "Running command {} from {}".format(" ".join(command), working_dir)

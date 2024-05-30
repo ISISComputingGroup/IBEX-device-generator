@@ -1,3 +1,5 @@
+"""Device information derived from ioc name, device name and device count."""
+
 from os.path import join
 from typing import Any
 
@@ -7,30 +9,43 @@ from utils.date import get_year
 
 
 class InvalidIOCNameError(ValueError):
+    """Indicate that IOC name is invalid."""
+
     pass
 
 
 class InvalidDeviceNameError(ValueError):
+    """Indicate that device name is invalid."""
+
     pass
 
 
 class InvalidIOCCountError(ValueError):
+    """Indicate that device count is invalid."""
+
     pass
 
 
 class ReassignPlaceholderError(Exception):
+    """Indicate that a value cannot be reassigned."""
+
     pass
 
 
 class DeviceInfo(dict):
-    """
-    Generates info used in setting up a device under IBEX based on the name
+    """Device info is a dictionary of placeholders and substitutions.
+
+    Device specific information is derived from IOC name, device name
+    and device count.
     """
 
     def __init__(
         self, ioc_name: str, device_name: str, device_count: int = 1
     ) -> None:
-        """
+        """Make a device info dictionary.
+
+        All placeholders are derived from ioc and device name.
+
         Args:
             ioc_name: The name of the IOC
                 (Must be between 1 and 8 alphanumeric characters)
@@ -41,6 +56,7 @@ class DeviceInfo(dict):
             InvalidIOCNameError: if IOC name is invalid.
             InvalidDeviceNameError: if device name is invalid
             InvalidIOCCountError: if device count is invalid
+
         """
         if not is_valid_ioc_name(ioc_name):
             raise InvalidIOCNameError()
@@ -75,6 +91,7 @@ class DeviceInfo(dict):
         # fmt: on
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        """Disable value reassignment."""
         if self.get(key):
             # Prevent modifying values
             raise ReassignPlaceholderError(
@@ -84,12 +101,15 @@ class DeviceInfo(dict):
             super().__setitem__(key, value)
 
     def ioc_indexed_name(self, index: int) -> str:
-        """
+        """Get IOCs indexed name.
+
         Args:
             index: The index of the application
 
-        Returns: The name of the application name for the given index
+        Returns:
+            The name of the application name for the given index
             "${ioc_name}-IOC-${ioc_index}" e.g. ABC-IOC-01
+
         """
         if not 0 < index < 100:
             raise InvalidIOCCountError()
@@ -97,12 +117,15 @@ class DeviceInfo(dict):
         return "{}-IOC-{:02d}".format(self._ioc_name, index)
 
     def ioc_boot_path(self, index: int) -> str:
-        """
+        """Get IOCs indexed booth path.
+
         Args:
             index: The index of the application
 
-        Returns: The path to the boot folder for ioc application
+        Returns:
+            The path to the boot folder for ioc application
             at the given index
+
         """
         return join(
             self[p.IOC_PATH],
@@ -111,8 +134,15 @@ class DeviceInfo(dict):
         )
 
     def ioc_app_path(self, index: int) -> str:
-        """
+        """Get IOCs indexed app path.
+
+        Args:
+            index: The index of the application
+
         Returns:
+            The path to the app folder for ioc application
+            at the given index
+
         """
         return join(self[p.IOC_PATH], f"{self.ioc_indexed_name(index)}App")
 
@@ -121,30 +151,39 @@ class DeviceInfo(dict):
 
 
 def is_valid_ioc_name(name: str) -> bool:
-    """
+    """Verify IOC name validty.
+
     Args:
         name: Name to check for validity
 
-    Returns: True is name valid, else False
+    Returns:
+        True is name valid, else False
+
     """
     return name.isalnum() and name.upper() == name and 1 <= len(name) <= 8
 
 
 def is_valid_device_name(name: str) -> bool:
-    """
+    """Verify device name validity.
+
     Args:
         name: Name to check for validity
 
-    Returns: True is name valid, else False
+    Returns:
+        True is name valid, else False
+
     """
     return name.isascii()
 
 
 def is_valid_device_count(count: int) -> bool:
-    """
+    """Verify device count validity.
+
     Args:
         count: Number of device IOCs
 
-    Returns: True is device count is valid, else False
+    Returns:
+        True is device count is valid, else False
+
     """
     return 0 < count < 100

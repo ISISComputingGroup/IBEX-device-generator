@@ -1,3 +1,5 @@
+"""Helper functions for IBEX gui manipulation."""
+
 import logging
 import os
 
@@ -11,9 +13,9 @@ from utils.templates import DeviceTemplate
 
 
 class DuplicateOPIKeyError(Exception):
-    """
+    """Indicate that an OPI key already exists.
+
     OPIs are identified by their keys and so this must be unique.
-    This error indicates that an OPI key already exists.
     """
 
     pass
@@ -44,15 +46,15 @@ template_opi_entry_xml_str = """
 
 
 def _generate_opi_entry(device: DeviceInfo) -> ElementTree:
-    """
-    Generates an ElementTree entry for opi info based on a device info
+    """Generate an ElementTree entry for opi info based on a device.
 
     Args:
         device: The device info representing the new device
 
-    Returns: ElementTree template based on the device info
-    """
+    Returns:
+        ElementTree template based on the device info
 
+    """
     concrete_opi_xml_str = DeviceTemplate(template_opi_entry_xml_str).apply(
         device
     )
@@ -63,13 +65,12 @@ def _generate_opi_entry(device: DeviceInfo) -> ElementTree:
 
 
 def add_device_opi_to_opi_info(device: DeviceInfo) -> None:
-    """
-    Add some basic template information to the opi_info.xml file
+    """Add some basic template information to the opi_info.xml file.
 
     Args:
         device: Key to identify to OPI to the GUI
-    """
 
+    """
     log = logging.getLogger("rich")
     log.info("Adding template information to opi info")
 

@@ -1,4 +1,4 @@
-"""GitHub related helper functions"""
+"""GitHub related helper functions."""
 
 import logging
 
@@ -13,25 +13,32 @@ IBEX_CLIENT_REPO_NAME = "ibex_gui"
 
 
 class NoGitHubTokenError(Exception):
+    """GitHub token is not specified."""
+
     def __init__(self, *args: object) -> None:
+        """Init default error."""
         super().__init__("GitHub token is not specified.", *args)
 
 
 class FailedToCreateGitHubRepositoryError(Exception):
+    """For some reason git repo could not be created."""
+
     pass
 
 
 class FailedToGrantPermissionError(Exception):
+    """For some reason could not grant permission."""
+
     pass
 
 
 def create_github_repository(device: DeviceInfo, github_token: str) -> None:
-    """
-    Creates a public repo in the ISIS Computing Group organization.
+    """Create a public repo in the ISIS Computing Group organization.
 
     Args:
-        device_info: Provides name-based information about the device
+        device: Provides name-based information about the device
         github_token: The GitHub authentication token.
+
     """
     if github_token is None:
         raise NoGitHubTokenError()
@@ -68,12 +75,14 @@ def create_github_repository(device: DeviceInfo, github_token: str) -> None:
 def grant_permission(
     github_token: str, team_name: str, permission: str, repository_name: str
 ) -> None:
-    """
+    """Grant permission to repo.
+
     Args:
         github_token: The GitHub authentication token.
         team_name: The name of the team.
         permission: The permission to add. See GitHub documentation for types.
         repository_name: The name of the repository.
+
     """
     response: requests.Response = requests.put(
         f"https://api.github.com/orgs/{ORGANIZATION_NAME}/teams/{team_name}/repos/{ORGANIZATION_NAME}/{repository_name}",
@@ -103,12 +112,12 @@ def grant_permission(
 def grant_permissions_for_github_repository(
     device: DeviceInfo, github_token: str
 ) -> None:
-    """
-    Grant permissions to teams for the GitHub repository.
+    """Grant permissions to teams for the GitHub repository.
 
     Args:
-        device_info: Provides name-based information about the device
+        device: Provides name-based information about the device
         github_token: The GitHub authentication token.
+
     """
     if github_token is None:
         raise NoGitHubTokenError()
@@ -128,11 +137,14 @@ def grant_permissions_for_github_repository(
 
 
 def does_github_issue_exist_and_is_open(issue_number: int) -> bool:
-    """
+    """Check whether GitHub issue exists and is open.
+
     Args:
         issue_number: The GitHub issue/ticket number.
 
-    Returns: Whether or not ticket exists and is open on GitHub.
+    Returns:
+        Whether or not ticket exists and is open on GitHub.
+
     """
     result = requests.get(
         f"https://api.github.com/repos/{ORGANIZATION_NAME}/IBEX/issues/{issue_number}"
@@ -140,8 +152,17 @@ def does_github_issue_exist_and_is_open(issue_number: int) -> bool:
     return result.ok and result.json()["state"] == "open"
 
 
-def github_repo_url(repo_name: str) -> str:
+def github_repo_url(
+    repo_name: str, organisation: str = ORGANIZATION_NAME
+) -> str:
+    """Get repo url for repo of the organisation.
+
+    Args:
+        repo_name: Name of the repository
+        organisation: The GitHub organisation owning the repository
+
+    Returns:
+        The url to the repository
+
     """
-    Get repo url within the organisation to a repository based on it's name
-    """
-    return f"https://github.com/{ORGANIZATION_NAME}/{repo_name}.git"
+    return f"https://github.com/{organisation}/{repo_name}.git"
