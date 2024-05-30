@@ -8,7 +8,7 @@
 ## Installation
 
 ```
-pip install git+https://github.com/ISISComputingGroup/IBEX-device-generator-new.git
+pip install git+https://github.com/ISISComputingGroup/IBEX-device-generator.git
 ```
 
 ## Usage

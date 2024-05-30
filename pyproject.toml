@@ -28,8 +28,15 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ISISComputingGroup/IBEX-device-generator-new"
-Issues = "https://github.com/ISISComputingGroup/IBEX-device-generator-new/issues"
+Homepage = "https://github.com/ISISComputingGroup/IBEX-device-generator"
+Issues = "https://github.com/ISISComputingGroup/IBEX-device-generator/issues"
 
+# This script will enable user to call ibex_device_generator from command line as a command
 [project.scripts]
 ibex_device_generator = "ibex_device_generator.cli:main"
+
+# Add src to pythonpath so imports work in test files.
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
