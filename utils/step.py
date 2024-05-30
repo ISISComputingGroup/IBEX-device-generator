@@ -5,8 +5,9 @@ from utils.command import run_command
 from utils.device_info import DEVICE_COUNT, IOC_PATH, DeviceInfo
 from utils.file_system import add_to_makefile_list
 from utils.git_utils import RepoWrapper
+from utils.github import github_repo_url
 from utils.gui import add_device_opi_to_opi_info
-from utils.placeholders import DEVICE_SUPPORT_MODULE_NAME, IOC_NAME, SUPPORT_MASTER_PATH
+import utils.placeholders as p
 from utils.templates import TEMPLATES, fill_template_tree
 
 
@@ -14,7 +15,7 @@ def create_submodule(device: DeviceInfo):
     epics_repo = RepoWrapper(EPICS)
 
     epics_repo.create_submodule(
-        device[DEVICE_SUPPORT_MODULE_NAME], device.github_repo_url, device[SUPPORT_MASTER_PATH]
+        device[p.DEVICE_SUPPORT_MODULE_NAME], github_repo_url(device[p.GITHUB_REPO_NAME]), device[p.SUPPORT_MASTER_PATH]
     )
 
     # Copy additional template files
@@ -24,7 +25,7 @@ def create_submodule(device: DeviceInfo):
         device,
     )
 
-    add_to_makefile_list(EPICS_SUPPORT, "SUPPDIRS", device[DEVICE_SUPPORT_MODULE_NAME])
+    add_to_makefile_list(EPICS_SUPPORT, "SUPPDIRS", device[p.DEVICE_SUPPORT_MODULE_NAME])
 
 
 def create_submodule_structure(device: DeviceInfo):
@@ -53,7 +54,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
         )
 
     # Add IOC to Makefile
-    add_to_makefile_list(IOC_ROOT, "IOCDIRS", device[IOC_NAME])
+    add_to_makefile_list(IOC_ROOT, "IOCDIRS", device[p.IOC_NAME])
 
     # Run make
     run_command(["make"], device[IOC_PATH])

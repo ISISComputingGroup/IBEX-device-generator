@@ -1,3 +1,8 @@
+# Exclude templates
+exclude = [
+    "templates",
+]
+
 # Set the maximum line length to 79.
 line-length = 79
 
@@ -5,4 +10,9 @@ line-length = 79
 # Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
 # overlap with the use of a formatter, like Black, but we can override this behavior by
 # explicitly adding the rule.
-extend-select = ["E501"]
+#extend-select = ["E501"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true

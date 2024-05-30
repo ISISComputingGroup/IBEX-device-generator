@@ -1,43 +1,24 @@
-import datetime
 from os.path import join
 from typing import Any
 
+from utils.date import get_year
+import utils.placeholders as p
 from paths import EPICS, EPICS_SUPPORT
-from utils.placeholders import (
-    DEVICE_COUNT,
-    DEVICE_DATABASE_NAME,
-    DEVICE_NAME,
-    DEVICE_PROTOCOL_NAME,
-    DEVICE_SUPPORT_MODULE_NAME,
-    GITHUB_REPO_NAME,
-    IOC_APP_PATH,
-    IOC_NAME,
-    IOC_PATH,
-    LEWIS_DEVICE_CLASS_NAME,
-    LEWIS_DEVICE_NAME,
-    OPI_FILE_NAME,
-    OPI_KEY,
-    SUPPORT_MASTER_PATH,
-    SUPPORT_PATH,
-    YEAR,
-)
 
 
-class InvalidIOCNameError(Exception):
-    "Raised when IOC name is invalid."
-
+class InvalidIOCNameError(ValueError):
     pass
 
 
-class InvalidDeviceNameError(Exception):
-    "Raised when Device name is invalid."
-
+class InvalidDeviceNameError(ValueError):
     pass
 
 
-class InvalidIOCCountError(Exception):
-    "Raised when IOC count is invalid."
+class InvalidIOCCountError(ValueError):
+    pass
 
+
+class ReassignPlaceholderError(Exception):
     pass
 
 
@@ -72,36 +53,32 @@ class DeviceInfo(dict):
         # Set up the substitutions according to the device's details
 
         # fmt: off
-        self[IOC_NAME]                      = ioc_name # noqa
-        self[DEVICE_NAME]                   = device_name # noqa
-        self[DEVICE_COUNT]                  = device_count # noqa
-        self[DEVICE_SUPPORT_MODULE_NAME]    = device_name_lower_underscores # noqa
-        self[LEWIS_DEVICE_NAME]             = device_name_lower_underscores # noqa
-        self[LEWIS_DEVICE_CLASS_NAME]       = device_name.title().replace(" ", "") # noqa
-        self[DEVICE_DATABASE_NAME]          = device_name_lower_underscores # noqa
-        self[DEVICE_PROTOCOL_NAME]          = device_name_lower_underscores # noqa
-        self[SUPPORT_PATH]                  = join(EPICS_SUPPORT, device_name_lower_underscores) # noqa
-        self[SUPPORT_MASTER_PATH]           = join(EPICS_SUPPORT, device_name_lower_underscores, "master") # noqa
-        self[GITHUB_REPO_NAME]              = f"EPICS-{device_name.replace(' ', '_')}" # noqa
-        self[IOC_PATH]                      = join(EPICS, "ioc", "master", ioc_name) # noqa
-        self[IOC_APP_PATH]                  = join(EPICS, "ioc", "master", ioc_name, f"{ioc_name}App") # noqa
-        self[OPI_FILE_NAME]                 = device_name_lower_underscores # noqa
-        self[OPI_KEY]                       = ioc_name # noqa
-        self[YEAR]                          = get_year() # noqa
+        self[p.IOC_NAME]                      = ioc_name # noqa
+        self[p.DEVICE_NAME]                   = device_name # noqa
+        self[p.DEVICE_COUNT]                  = device_count # noqa
+        self[p.DEVICE_SUPPORT_MODULE_NAME]    = device_name_lower_underscores # noqa
+        self[p.LEWIS_DEVICE_NAME]             = device_name_lower_underscores # noqa
+        self[p.LEWIS_DEVICE_CLASS_NAME]       = device_name.title().replace(" ", "") # noqa
+        self[p.DEVICE_DATABASE_NAME]          = device_name_lower_underscores # noqa
+        self[p.DEVICE_PROTOCOL_NAME]          = device_name_lower_underscores # noqa
+        self[p.SUPPORT_PATH]                  = join(EPICS_SUPPORT, device_name_lower_underscores) # noqa
+        self[p.SUPPORT_MASTER_PATH]           = join(EPICS_SUPPORT, device_name_lower_underscores, "master") # noqa
+        self[p.GITHUB_REPO_NAME]              = f"EPICS-{device_name.replace(' ', '_')}" # noqa
+        self[p.IOC_PATH]                      = join(EPICS, "ioc", "master", ioc_name) # noqa
+        self[p.IOC_APP_PATH]                  = join(EPICS, "ioc", "master", ioc_name, f"{ioc_name}App") # noqa
+        self[p.OPI_FILE_NAME]                 = device_name_lower_underscores # noqa
+        self[p.OPI_KEY]                       = ioc_name # noqa
+        self[p.YEAR]                          = get_year() # noqa
         # fmt: on
 
     def __setitem__(self, key: Any, value: Any):
         if self.get(key):
             # Prevent modifying values
-            raise Exception(
+            raise ReassignPlaceholderError(
                 "Attempting to modify value in device info dictionary"
             )
         else:
             super().__setitem__(key, value)
-
-    @property
-    def github_repo_url(self):
-        return f"https://github.com/ISISComputingGroup/{self[GITHUB_REPO_NAME]}.git"
 
     def ioc_indexed_name(self, index: int) -> str:
         """
@@ -125,7 +102,7 @@ class DeviceInfo(dict):
             at the given index
         """
         return join(
-            self[IOC_PATH],
+            self[p.IOC_PATH],
             "iocBoot",
             self.ioc_indexed_name(index),
         )
@@ -134,18 +111,7 @@ class DeviceInfo(dict):
         """
         Returns:
         """
-        return join(
-            self[IOC_PATH], f"{self.ioc_indexed_name(index)}App"
-        )
-
-
-def get_year() -> str:
-    """
-    Get the current year.
-    Returns:
-         str:  The current year formatted as a string
-    """
-    return str(datetime.datetime.now().year)
+        return join(self[p.IOC_PATH], f"{self.ioc_indexed_name(index)}App")
 
 
 # Validation

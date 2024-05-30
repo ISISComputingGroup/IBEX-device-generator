@@ -6,7 +6,7 @@ from utils.device_info import (
     is_valid_device_name,
     is_valid_ioc_name,
 )
-from utils.github_requests import does_github_issue_exist_and_is_open
+from utils.github import does_github_issue_exist_and_is_open
 
 
 def parse_arguments():

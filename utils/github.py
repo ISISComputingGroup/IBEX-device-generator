@@ -1,3 +1,5 @@
+"""GitHub related helper functions"""
+
 import logging
 
 import requests
@@ -10,6 +12,14 @@ ORGANIZATION_NAME = "ISISComputingGroup"
 class NoGitHubTokenError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__("GitHub token is not specified.", *args)
+
+
+class FailedToCreateGitHubRepositoryError(Exception):
+    pass
+
+
+class FailedToGrantPermissionError(Exception):
+    pass
 
 
 def create_github_repository(device: DeviceInfo, github_token: str) -> None:
@@ -38,11 +48,17 @@ def create_github_repository(device: DeviceInfo, github_token: str) -> None:
 
     if response.status_code == requests.codes["created"]:
         logging.info(
-            f"Repository {response.json().get('html_url')} created successfully."
+            (
+                f"Repository {response.json().get('html_url')}"
+                " created successfully."
+            )
         )
     else:
-        raise Exception(
-            f"Failed to create repository [{response.status_code}]: {response.reason}"
+        raise FailedToCreateGitHubRepositoryError(
+            (
+                f"Failed to create repository [{response.status_code}]:"
+                f" {response.reason}"
+            )
         )
 
 
@@ -67,11 +83,17 @@ def grant_permission(
 
     if response.status_code == requests.codes["no_content"]:
         logging.info(
-            f"Permission '{permission}' granted to team '{team_name}' for repository '{repository_name}'."
+            (
+                f"Permission '{permission}' granted to team '{team_name}'"
+                " for repository '{repository_name}'."
+            )
         )
     else:
-        raise Exception(
-            f"Failed to grant permission [{response.status_code}]: {response.reason}"
+        raise FailedToGrantPermissionError(
+            (
+                f"Failed to grant permission [{response.status_code}]"
+                f" {response.reason}"
+            )
         )
 
 
@@ -107,9 +129,16 @@ def does_github_issue_exist_and_is_open(issue_number: int) -> bool:
     Args:
         issue_number: The GitHub issue/ticket number.
 
-    Returns: Whether or not ticket exists on GitHub.
+    Returns: Whether or not ticket exists and is open on GitHub.
     """
     result = requests.get(
         f"https://api.github.com/repos/{ORGANIZATION_NAME}/IBEX/issues/{issue_number}"
     )
     return result.ok and result.json()["state"] == "open"
+
+
+def github_repo_url(repo_name: str):
+    """
+    Get repo url within the organisation to a repository based on it's name
+    """
+    return f"https://github.com/{ORGANIZATION_NAME}/{repo_name}.git"

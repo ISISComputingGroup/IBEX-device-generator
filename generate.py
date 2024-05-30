@@ -7,7 +7,7 @@ from paths import CLIENT, EPICS, IOC_ROOT
 from utils.arg_parser import parse_arguments
 from utils.device_info import DeviceInfo
 from utils.git_utils import commit_changes
-from utils.github_requests import (
+from utils.github import (
     create_github_repository,
     grant_permissions_for_github_repository,
 )
