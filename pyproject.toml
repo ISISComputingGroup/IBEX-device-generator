@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ibex_device_generator"
+version = "0.0.1"
+authors = [
+  { name="Zsolt Kebel", email="25386639+zsoltkebel@users.noreply.github.com" },
+]
+description = "IBEX device generator."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "GitPython >= 3.1.43",
+  "lxml >= 5.2.1",
+  "Requests >= 2.32.3",
+  "rich >= 13.7.1",
+  "ruff >= 0.4.6",
+  "unittest_xml_reporting >= 3.2.0",
+  "xmlrunner >= 1.7.7",
+]
+
+[project.urls]
+Homepage = "https://github.com/ISISComputingGroup/IBEX-device-generator-new"
+Issues = "https://github.com/ISISComputingGroup/IBEX-device-generator-new/issues"
+
+[project.scripts]
+ibex_device_generator = "ibex_device_generator.cli:main"

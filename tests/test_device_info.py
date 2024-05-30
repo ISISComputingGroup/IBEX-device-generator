@@ -3,15 +3,15 @@
 from os.path import join
 from unittest import TestCase
 
-import utils.placeholders as keys_file
-from paths import EPICS, EPICS_SUPPORT
-from utils.device_info import (
+import ibex_device_generator.utils.placeholders as keys_file
+from ibex_device_generator.paths import EPICS, EPICS_SUPPORT
+from ibex_device_generator.utils.device_info import (
     DeviceInfo,
     InvalidDeviceNameError,
     InvalidIOCNameError,
     get_year,
 )
-from utils.placeholders import (
+from ibex_device_generator.utils.placeholders import (
     DEVICE_COUNT,
     DEVICE_DATABASE_NAME,
     DEVICE_NAME,
