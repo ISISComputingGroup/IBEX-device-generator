@@ -20,15 +20,19 @@ class DeviceTemplate(Template):
 
 def fill_template_file(
     template: str, destination: str, substitutions: dict[str, str]
-):
+) -> None:
     """
-    Take template file at location and write it out to destination with the substitutions
+    Take template file at location and write it out to destination
+    with the substitutions
 
     Raises KeyError if placeholders are missing from mapping
     """
 
     logging.debug(
-        f"Using template at '{template}' with substitutions ({substitutions}) to populate '{destination}'"
+        (
+            f"Using template at '{template}' with substitutions"
+            f" ({substitutions}) to populate '{destination}'"
+        )
     )
 
     # Make directories along the path to the file
@@ -46,20 +50,25 @@ def fill_template_tree(
     src: str, dst: str, substitutions: dict[str, str]
 ) -> str:
     """
-    Copies the template files located in src directory recursively into the destination directory dst
-    substituting all placeholders within directory names and file contents.
+    Copies the template files located in src directory recursively into
+    the destination directory dst substituting all placeholders within
+    directory names and file contents.
 
     Args:
         src: Root directory of template files
         dst: Destination root directory
-        substitutions: The map of substitutions in the form of {key: substitution}
+        substitutions: The map of substitutions in the form of
+            {key: substitution}
 
     Returns:
         List of absolute file paths that were written out.
     """
 
     logging.debug(
-        f"Using templates in directory '{src}' with substitutions ({substitutions}) to populate '{dst}'"
+        (
+            f"Using templates in directory '{src}' with substitutions"
+            f" ({substitutions}) to populate '{dst}'"
+        )
     )
 
     result_files = []
@@ -81,7 +90,9 @@ def fill_template_tree(
     return result_files
 
 
-def use_template(template_path, substitutions, destination_root=EPICS):
+def use_template(
+    template_path: str, substitutions: str, destination_root: str = EPICS
+) -> None:
     templates = os.path.join(TEMPLATES, template_path)
     substituted_template_path = DeviceTemplate(template_path).substitute(
         substitutions

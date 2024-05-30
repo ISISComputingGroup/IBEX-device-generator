@@ -1,9 +1,9 @@
 from os.path import join
 from typing import Any
 
-from utils.date import get_year
 import utils.placeholders as p
 from paths import EPICS, EPICS_SUPPORT
+from utils.date import get_year
 
 
 class InvalidIOCNameError(ValueError):
@@ -27,12 +27,15 @@ class DeviceInfo(dict):
     Generates info used in setting up a device under IBEX based on the name
     """
 
-    def __init__(self, ioc_name: str, device_name: str, device_count: int = 1):
+    def __init__(
+        self, ioc_name: str, device_name: str, device_count: int = 1
+    ) -> None:
         """
         Args:
             ioc_name: The name of the IOC
                 (Must be between 1 and 8 alphanumeric characters)
             device_name: The longer, more descriptive name of the device.
+            device_count: Number of IOCs to generate. Defaults to 1
 
         Raises:
             InvalidIOCNameError: if IOC name is invalid.
@@ -71,7 +74,7 @@ class DeviceInfo(dict):
         self[p.YEAR]                          = get_year() # noqa
         # fmt: on
 
-    def __setitem__(self, key: Any, value: Any):
+    def __setitem__(self, key: Any, value: Any) -> None:
         if self.get(key):
             # Prevent modifying values
             raise ReassignPlaceholderError(
@@ -93,7 +96,7 @@ class DeviceInfo(dict):
 
         return "{}-IOC-{:02d}".format(self._ioc_name, index)
 
-    def ioc_boot_path(self, index: int):
+    def ioc_boot_path(self, index: int) -> str:
         """
         Args:
             index: The index of the application

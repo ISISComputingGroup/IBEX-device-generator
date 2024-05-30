@@ -4,13 +4,15 @@ import argparse
 import os
 import sys
 import unittest
+
 from xmlrunner import XMLTestRunner
+
 from tests.test_device_info import DeviceInfoTests
 
 DEFAULT_TEST_LOCATION = "test-reports\\"
 
 
-def run_tests(test_reports_path=DEFAULT_TEST_LOCATION):
+def run_tests(test_reports_path: str = DEFAULT_TEST_LOCATION) -> None:
     """
     Runs the test suite
 
@@ -34,7 +36,7 @@ def run_tests(test_reports_path=DEFAULT_TEST_LOCATION):
     )
 
 
-def main():
+def main() -> None:
     """
     Routine to run when script executed from the command line
     """

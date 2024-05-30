@@ -4,10 +4,11 @@ import logging
 from os.path import join
 
 
-def _add_entry_to_list(text, list_name, entry):
+def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
     """
-    Check if IOC name has already been added to support/Makefile or ioc/master/Makefile,
-    and add it at the end of IOC | SUPP DIRS list if it isn't there already.
+    Check if IOC name has already been added to support/Makefile
+    or ioc/master/Makefile, and add it at the end of IOC | SUPP DIRS list
+    if it isn't there already.
 
     Args:
         text: The original text
@@ -22,7 +23,8 @@ def _add_entry_to_list(text, list_name, entry):
     marker = "{} += ".format(list_name)
 
     new_line = marker + entry + "\n"
-    # Go to the end of the list of IOCDIRS/SUPPDIRS += iocname, and add our new IOC
+    # Go to the end of the list of IOCDIRS/SUPPDIRS += iocname,
+    # and add our new IOC
     for line in text:
         if entry in line:
             # Entry already in the list
@@ -37,10 +39,10 @@ def _add_entry_to_list(text, list_name, entry):
     return new_text  # return Makefile with new entry
 
 
-def add_to_makefile_list(directory, list_name, entry):
+def add_to_makefile_list(directory: str, list_name: str, entry: str) -> None:
     """
-    Adds an entry to a list in a makefile. Finds the last line of the form "list_name += ..." and puts a new line
-    containing the entry after it
+    Adds an entry to a list in a makefile. Finds the last line of the form
+    "list_name += ..." and puts a new line containing the entry after it
 
     Args:
         directory: Directory containing the makefile

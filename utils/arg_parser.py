@@ -1,5 +1,5 @@
 import argparse
-from argparse import ArgumentTypeError
+from argparse import ArgumentTypeError, Namespace
 
 from utils.device_info import (
     is_valid_device_count,
@@ -9,15 +9,17 @@ from utils.device_info import (
 from utils.github import does_github_issue_exist_and_is_open
 
 
-def parse_arguments():
+def parse_arguments() -> Namespace:
     parser = argparse.ArgumentParser(
-        description="IBEX Device IOC Generator. Generate boilerplate code for IBEX device support.",
+        description=("IBEX Device IOC Generator. "
+                     "Generate boilerplate code for IBEX device support."),
     )
 
     parser.add_argument(
         "ioc_name",
         type=ioc_name_checker,
-        help="Name of the IOC. This name is used in the ioc/master submodule and PVs will use this name.",
+        help=("Name of the IOC. This name is used in the ioc/master submodule "
+              "and PVs will use this name."),
     )
     parser.add_argument(
         "ticket",
@@ -28,7 +30,9 @@ def parse_arguments():
     parser.add_argument(
         "--device_name",
         type=device_name_checker,
-        help="Name of the device, this name will be used to create suppport submodule and GitHub repository. If not specified it defaults to be the same as the IOC name.",
+        help=("Name of the device, this name will be used to create suppport "
+              "submodule and GitHub repository. If not specified it defaults "
+              "to be the same as the IOC name."),
     )
     parser.add_argument(
         "--device_count",
@@ -40,12 +44,15 @@ def parse_arguments():
     parser.add_argument(
         "--use_git",
         action="store_true",
-        help="Create/switch to ticket branches and make commits accordingly at every step. The script will abort if the git status is dirty at the respective repositories.",
+        help=("Create/switch to ticket branches and make commits accordingly "
+              "at every step. The script will abort if the git status is "
+              "dirty at the respective repositories."),
     )
     parser.add_argument(
         "--github_token",
         type=str,
-        help='GitHub token with "repo" scope. Use to create support repository.',
+        help=("GitHub token with \"repo\" scope. "
+              "Use to create support repository."),
     )
     parser.add_argument(
         "--log_level",
@@ -69,7 +76,8 @@ def parse_arguments():
 def ioc_name_checker(ioc_name: str) -> str:
     if not is_valid_ioc_name(ioc_name):
         raise ArgumentTypeError(
-            "IOC Name is invalid. Make sure IOC name is an alphanumeric string, all upper case and the length is between 1 to 8."
+            ("IOC Name is invalid. Make sure IOC name is an alphanumeric "
+             "string, all upper case and the length is between 1 to 8.")
         )
     return ioc_name
 

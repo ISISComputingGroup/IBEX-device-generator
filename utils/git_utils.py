@@ -1,66 +1,32 @@
 """
-Utilities for interacting with Git. This is sometimes done via the command line and other times the PythonGit API.
+Utilities for interacting with Git. This is sometimes done via the command line
+and other times the PythonGit API.
 """
 
 import logging
-import os
 import subprocess
 from contextlib import contextmanager
 from os.path import relpath
+from typing import Generator
 
 from git import (
     GitCommandError,
+    GitError,
     InvalidGitRepositoryError,
-    NoSuchPathError,
     Repo,
+    RepositoryDirtyError,
 )
 from rich.prompt import Confirm
 
+from utils.github import EPICS_REPO_NAME, github_repo_url
 
-class DirtyRepositoryError(Exception):
-    "Raised when git repository is dirty."
 
+class FailedToSwitchBranchError(GitError):
     pass
 
 
-def use_git_conditionally(
-    use_git: bool,
-    repo_path: str,
-    branch: str,
-    commit_msg: str,
-    action: callable,
-    *args,
-    **kwargs,
-):
-    if use_git:
-        with commit_changes(repo_path, branch, commit_msg):
-            action(*args, **kwargs)
-    else:
-        action(*args, **kwargs)
-
-
-@contextmanager
-def commit_changes(repo_path, branch, msg, confirm_commit=True):
-    repo = RepoWrapper(repo_path)
-
-    if repo.is_dirty(untracked_files=True) or (
-        str(repo.active_branch) != "main"
-        and str(repo.active_branch) != "master"
-        and str(repo.active_branch) != branch
-    ):
-        raise DirtyRepositoryError(
-            f"Please make sure git status is clean in '{repo.working_tree_dir}' and that the active branch is main/master or {branch}."
-        )
-
-    repo.switch(branch)
-
-    yield repo
-
-    if not confirm_commit or Confirm.ask(
-        f"Commit all changes and untracked files in '{repo.working_tree_dir}'?",
-        default="y",
-    ):
-        repo.commit_all(msg)
+class WrongRepositoryOriginError(GitError):
+    pass
 
 
 class RepoWrapper(Repo):
@@ -68,28 +34,42 @@ class RepoWrapper(Repo):
     A wrapper around a git repository
     """
 
-    def __init__(self, path, origin=None):
+    def __init__(
+        self,
+        path: str,
+        origin: str = github_repo_url(EPICS_REPO_NAME),
+        init: bool = False,
+    ) -> None:
         """
         Args:
             path: The path to the git repository
+            origin: The url to repo's remote origin. During initialisation if
+                this does not equal the repo's remote origin a
+                WrongRepositoryOriginError is raised.
+                When a new repository is initialised this is used to set up
+                remote origin.
+            init: If True git repo is initialised at directory if it
+                doesn't exist.
         """
-        super().__init__(path)
         try:
-            self._repo = self
-            # assert self._repo.remote().url == origin
-        except (InvalidGitRepositoryError, NoSuchPathError):
-            os.makedirs(path)
-            self._repo = Repo.init(path, initial_branch="main")
-            self._repo.create_remote("origin", origin)
-
-        except Exception as e:
-            raise RuntimeError(
-                "Unable to attach to git repository at path {}: {}".format(
-                    path, e
+            super().__init__(path)
+            if self.remote().url != origin:
+                raise WrongRepositoryOriginError(
+                    (
+                        f"Expected git repository at '{path}' to have remote"
+                        f" origin set to '{origin}' instead it tracks"
+                        f" '{self.remote().url}'"
+                    )
                 )
-            )
 
-    def switch(self, branch="main"):
+        except InvalidGitRepositoryError as error:
+            if init:
+                self.init(path, initial_branch="main")
+                self.create_remote("origin", origin)
+            else:
+                raise error
+
+    def switch(self, branch: str = "main") -> None:
         """
         Switch to branch. Creates it if needed.
 
@@ -112,11 +92,11 @@ class RepoWrapper(Repo):
                 self._repo.git.checkout("-b", branch)
 
         except GitCommandError as e:
-            raise RuntimeError(
+            raise FailedToSwitchBranchError(
                 "Error whilst creating git branch, {}".format(e)
             )
 
-    def commit_all(self, msg: str):
+    def commit_all(self, msg: str) -> None:
         """
         Commits all changes and untracked files in the repository.
 
@@ -125,7 +105,10 @@ class RepoWrapper(Repo):
         """
 
         logging.debug(
-            f"Attempting to commit all changes and untracked files in '{self.working_tree_dir}'."
+            (
+                f"Attempting to commit all changes and untracked files in"
+                f" '{self.working_tree_dir}'."
+            )
         )
 
         try:
@@ -138,7 +121,7 @@ class RepoWrapper(Repo):
                 )
             )
 
-    def create_submodule(self, name, url, path):
+    def create_submodule(self, name: str, url: str, path: str) -> None:
         """
         Args:
             name: Name of the submodule
@@ -149,10 +132,15 @@ class RepoWrapper(Repo):
             branch = "main"
             # create path relative to current root in case path is absolute
             sub_path = relpath(path, start=self._repo.working_tree_dir)
-            # We use subprocess here because gitpython seems to add a /refs/heads/ prefix to any branch you give it,
+            # We use subprocess here because gitpython seems to add a
+            # /refs/heads/ prefix to any branch you give it,
             # and this breaks the repo checks.
+
+            cmd = (
+                f"git submodule add -b {branch} --name {name} {url} {sub_path}"
+            )
             subprocess.run(
-                f"git submodule add -b {branch} --name {name} {url} {sub_path}",
+                cmd,
                 cwd=self._repo.working_tree_dir,
                 check=True,
             )
@@ -163,7 +151,41 @@ class RepoWrapper(Repo):
             )
         except Exception as e:
             raise RuntimeError(
-                "Unknown error {} of type {} whilst creating submodule in {}".format(
-                    e, type(e), path
+                (
+                    f"Unknown error {e} of type {type(e)} whilst"
+                    f" creating submodule in {path}"
                 )
             )
+
+
+@contextmanager
+def commit_changes(
+    repo_path: str, branch: str, msg: str, confirm_commit: bool = True
+) -> Generator[RepoWrapper, None, None]:
+    repo = RepoWrapper(repo_path)
+
+    if repo.is_dirty(untracked_files=True) or (
+        str(repo.active_branch) != "main"
+        and str(repo.active_branch) != "master"
+        and str(repo.active_branch) != branch
+    ):
+        raise RepositoryDirtyError(
+            (
+                f"Please make sure git status is clean in"
+                f"'{repo.working_tree_dir}' and that the active branch"
+                f" is main/master or {branch}."
+            )
+        )
+
+    repo.switch(branch)
+
+    yield repo
+
+    if not confirm_commit or Confirm.ask(
+        (
+            f"Commit all changes and untracked files in"
+            f" '{repo.working_tree_dir}'?"
+        ),
+        default="y",
+    ):
+        repo.commit_all(msg)

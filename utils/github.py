@@ -4,9 +4,12 @@ import logging
 
 import requests
 
-from utils.device_info import GITHUB_REPO_NAME, DeviceInfo
+from utils.device_info import DeviceInfo
+from utils.placeholders import GITHUB_REPO_NAME
 
 ORGANIZATION_NAME = "ISISComputingGroup"
+EPICS_REPO_NAME = "EPICS"
+IBEX_CLIENT_REPO_NAME = "ibex_gui"
 
 
 class NoGitHubTokenError(Exception):
@@ -137,7 +140,7 @@ def does_github_issue_exist_and_is_open(issue_number: int) -> bool:
     return result.ok and result.json()["state"] == "open"
 
 
-def github_repo_url(repo_name: str):
+def github_repo_url(repo_name: str) -> str:
     """
     Get repo url within the organisation to a repository based on it's name
     """

@@ -30,19 +30,23 @@ from utils.placeholders import (
 
 
 class DeviceInfoTests(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.device = DeviceInfo("ND1", "New Device 1", device_count=4)
 
-    def test_all_keys_present_in_device_info_substitutions(self):
+    def test_all_keys_present_in_device_info_substitutions(self) -> None:
         # -> Check all vars in substitution_keys are used
         for name, value in vars(keys_file).items():
             if not name.startswith("__"):
                 self.assertIn(
                     value,
                     self.device,
-                    msg=f"Key '{name}' ('{value}') is missing from the device info substitutions.",
+                    msg=(
+                        f"Key '{name}' ('{value}') is missing from the"
+                        " device info substitutions."
+                    ),
                 )
-        # <- Check all keys in device info substitutions exists in substitution_keys
+        # <- Check all keys in device info substitutions exists
+        # in substitution_keys
         values_in_substitutions_file = [
             value
             for name, value in vars(keys_file).items()
@@ -52,10 +56,13 @@ class DeviceInfoTests(TestCase):
             self.assertIn(
                 key,
                 values_in_substitutions_file,
-                msg=f"Deice info substitutions contains a key ('{key}') that is not present in utils.substitution_keys",
+                msg=(
+                    f"Deice info substitutions contains a key ('{key}')"
+                    " that is not present in utils.substitution_keys"
+                ),
             )
 
-    def test_device_info_substitutions_are_correct(self):
+    def test_device_info_substitutions_are_correct(self) -> None:
         expected_substitutions = {
             IOC_NAME: "ND1",
             DEVICE_NAME: "New Device 1",
@@ -82,7 +89,7 @@ class DeviceInfoTests(TestCase):
                 msg=f"Values for key '{key}' are incosistent.",
             )
 
-    def test_invalid_name_raises_error(self):
+    def test_invalid_name_raises_error(self) -> None:
         with self.assertRaises(InvalidIOCNameError):
             # Non-alphanumeric character
             DeviceInfo("ND 1", "New Device 1")

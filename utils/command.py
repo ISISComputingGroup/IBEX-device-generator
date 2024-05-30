@@ -1,9 +1,14 @@
 import logging
 import subprocess
-from os import devnull
+from os import PathLike, devnull
+from typing import Sequence, TypeAlias
+
+StrOrBytesPath: TypeAlias = str | bytes | PathLike[str] | PathLike[bytes]
 
 
-def run_command(command, working_dir):
+def run_command(
+    command: StrOrBytesPath | Sequence[StrOrBytesPath], working_dir: str
+) -> int:
     """
     Runs a command using subprocess. Waits for completion
 
@@ -22,4 +27,4 @@ def run_command(command, working_dir):
             stderr=subprocess.STDOUT,
             stdin=subprocess.PIPE,
         )
-    cmd.wait()
+    return cmd.wait()

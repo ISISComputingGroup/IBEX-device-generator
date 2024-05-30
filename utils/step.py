@@ -1,21 +1,23 @@
 import os
 
+import utils.placeholders as p
 from paths import CLIENT_SRC, EPICS, EPICS_SUPPORT, IOC_ROOT
 from utils.command import run_command
-from utils.device_info import DEVICE_COUNT, IOC_PATH, DeviceInfo
+from utils.device_info import DeviceInfo
 from utils.file_system import add_to_makefile_list
 from utils.git_utils import RepoWrapper
 from utils.github import github_repo_url
 from utils.gui import add_device_opi_to_opi_info
-import utils.placeholders as p
 from utils.templates import TEMPLATES, fill_template_tree
 
 
-def create_submodule(device: DeviceInfo):
+def create_submodule(device: DeviceInfo) -> None:
     epics_repo = RepoWrapper(EPICS)
 
     epics_repo.create_submodule(
-        device[p.DEVICE_SUPPORT_MODULE_NAME], github_repo_url(device[p.GITHUB_REPO_NAME]), device[p.SUPPORT_MASTER_PATH]
+        device[p.DEVICE_SUPPORT_MODULE_NAME],
+        github_repo_url(device[p.GITHUB_REPO_NAME]),
+        device[p.SUPPORT_MASTER_PATH],
     )
 
     # Copy additional template files
@@ -25,10 +27,12 @@ def create_submodule(device: DeviceInfo):
         device,
     )
 
-    add_to_makefile_list(EPICS_SUPPORT, "SUPPDIRS", device[p.DEVICE_SUPPORT_MODULE_NAME])
+    add_to_makefile_list(
+        EPICS_SUPPORT, "SUPPDIRS", device[p.DEVICE_SUPPORT_MODULE_NAME]
+    )
 
 
-def create_submodule_structure(device: DeviceInfo):
+def create_submodule_structure(device: DeviceInfo) -> None:
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_support_submodule"),
         EPICS,
@@ -45,7 +49,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     )
 
     # For nth IOC apps
-    for i in range(2, device[DEVICE_COUNT] + 1):
+    for i in range(2, device[p.DEVICE_COUNT] + 1):
         subs = device
         subs["ioc_number"] = "{:02d}".format(i)
 
@@ -57,7 +61,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     add_to_makefile_list(IOC_ROOT, "IOCDIRS", device[p.IOC_NAME])
 
     # Run make
-    run_command(["make"], device[IOC_PATH])
+    run_command(["make"], device[p.IOC_PATH])
 
 
 def add_test_framework(device: DeviceInfo) -> None:
@@ -77,8 +81,6 @@ def add_lewis_emulator(device: DeviceInfo) -> None:
 
 
 def add_opi_to_gui(device: DeviceInfo) -> None:
-    # TODO This step will fail to commit because the git hook changes additional files "dummy widgets". This will need to be fixed somehow
-
     fill_template_tree(
         os.path.join(TEMPLATES, "phase_add_opi_to_gui"),
         CLIENT_SRC,

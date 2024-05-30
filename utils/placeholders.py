@@ -1,9 +1,10 @@
 """
-List of all the possible placeholders in the template files. All of these keys should be present in the device info substitutions.
+List of all the possible placeholders in the template files.
+All of these keys should be present in the device info substitutions.
 """
 
 IOC_NAME = "ioc_name"
-""" IOC name as the user entered it. Validity checks are run. """
+""" IOC name as the user entered it. Validity checks are run """
 
 DEVICE_NAME = "device_name"
 """ Can be longer and may contain spoaces and any ascii characters."""
@@ -40,7 +41,8 @@ IOC_PATH = "ioc_path"
 """ The path to the ioc usually: EPICS/ioc/master/<ioc> """
 
 IOC_APP_PATH = "ioc_app_path"
-""" The path to the ioc app directory usually: EPICS/ioc/master/<ioc>/<ioc>App """
+""" The path to the ioc app directory usually:
+EPICS/ioc/master/<ioc>/<ioc>App """
 
 # gui
 OPI_FILE_NAME = "opi_file_name"

@@ -31,14 +31,17 @@ class IBEXDeviceGenerator:
         ticket_num: int,
         retry: bool = True,
     ) -> None:
+        device_name_underscores = device[DEVICE_NAME].replace(" ", "_")
+        ticket_branch = f"Ticket{ticket_num}_Add_IOC_{device_name_underscores}"
+
         self.device = device
         self.use_git = use_git
         self.github_token = github_token
         self.ticket_num = ticket_num
-        self.ticket_branch = f"Ticket{self.ticket_num}_Add_IOC_{self.device[DEVICE_NAME].replace(' ', '_')}"
+        self.ticket_branch = ticket_branch
         self.retry = retry
 
-    def run(self):
+    def run(self) -> None:
         # Generator steps below
 
         self.add_step(
@@ -91,7 +94,14 @@ class IBEXDeviceGenerator:
 
         self.add_step(CLIENT, "Add OPI to gui", add_opi_to_gui, self.device)
 
-    def add_step(self, repo_path, commit_msg, action, *args, **kwargs):
+    def add_step(
+        self,
+        repo_path: str,
+        commit_msg: str,
+        action: callable,
+        *args,
+        **kwargs,
+    ) -> None:
         if not Confirm.ask(f"Do '{commit_msg}'?", default="y"):
             logging.info(
                 ":right_arrow:  Skipping step.", extra={"markup": True}
@@ -120,7 +130,7 @@ class IBEXDeviceGenerator:
                 self.add_step(repo_path, commit_msg, action, *args, **kwargs)
 
 
-def _configure_logging(level=logging.INFO):
+def _configure_logging(level: str = logging.INFO) -> None:
     logging.basicConfig(
         level=level,
         format="%(message)s",

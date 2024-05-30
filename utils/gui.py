@@ -5,12 +5,16 @@ from lxml import etree
 from lxml.etree import ElementTree
 
 from paths import OPI_RESOURCES
-from utils.device_info import OPI_KEY, DeviceInfo
+from utils.device_info import DeviceInfo
+from utils.placeholders import OPI_KEY
 from utils.templates import DeviceTemplate
 
 
 class DuplicateOPIKeyError(Exception):
-    """OPIs are identified by their keys and so this must be unique. This error indicates that an OPI key already exists."""
+    """
+    OPIs are identified by their keys and so this must be unique.
+    This error indicates that an OPI key already exists.
+    """
 
     pass
 
@@ -35,7 +39,7 @@ template_opi_entry_xml_str = """
         <categories></categories>
     </value>
 </entry>
-"""
+"""  # noqa: E501
 # fmt: on
 
 
@@ -58,7 +62,7 @@ def _generate_opi_entry(device: DeviceInfo) -> ElementTree:
     )
 
 
-def add_device_opi_to_opi_info(device: DeviceInfo):
+def add_device_opi_to_opi_info(device: DeviceInfo) -> None:
     """
     Add some basic template information to the opi_info.xml file
 
