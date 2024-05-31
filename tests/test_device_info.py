@@ -3,7 +3,7 @@
 from os.path import join
 from unittest import TestCase
 
-import ibex_device_generator.utils.placeholders as keys_file
+import ibex_device_generator.utils.placeholders as p
 from ibex_device_generator.paths import EPICS, EPICS_SUPPORT
 from ibex_device_generator.utils.device_info import (
     DeviceInfo,
@@ -11,24 +11,8 @@ from ibex_device_generator.utils.device_info import (
     InvalidIOCNameError,
     get_year,
 )
-from ibex_device_generator.utils.placeholders import (
-    DEVICE_COUNT,
-    DEVICE_DATABASE_NAME,
-    DEVICE_NAME,
-    DEVICE_PROTOCOL_NAME,
-    DEVICE_SUPPORT_MODULE_NAME,
-    GITHUB_REPO_NAME,
-    IOC_APP_PATH,
-    IOC_NAME,
-    IOC_PATH,
-    LEWIS_DEVICE_CLASS_NAME,
-    LEWIS_DEVICE_NAME,
-    OPI_FILE_NAME,
-    OPI_KEY,
-    SUPPORT_MASTER_PATH,
-    SUPPORT_PATH,
-    YEAR,
-)
+
+from tests.test_placeholders import get_placeholders
 
 
 class DeviceInfoTests(TestCase):
@@ -36,32 +20,27 @@ class DeviceInfoTests(TestCase):
 
     def setUp(self) -> None:
         """Create a device."""
+        self.placeholders = get_placeholders()
         self.device = DeviceInfo("ND1", "New Device 1", device_count=4)
 
     def test_all_keys_present_in_device_info_substitutions(self) -> None:
         """Check that all placeholders are used as keys in the device info."""
         # -> Check all vars in substitution_keys are used
-        for name, value in vars(keys_file).items():
-            if not name.startswith("__"):
-                self.assertIn(
-                    value,
-                    self.device,
-                    msg=(
-                        f"Key '{name}' ('{value}') is missing from the"
-                        " device info substitutions."
-                    ),
-                )
+        for name, value in self.placeholders.items():
+            self.assertIn(
+                value,
+                self.device,
+                msg=(
+                    f"Key '{name}' ('{value}') is missing from the"
+                    " device info substitutions."
+                ),
+            )
         # <- Check all keys in device info substitutions exists
         # in substitution_keys
-        values_in_substitutions_file = [
-            value
-            for name, value in vars(keys_file).items()
-            if not name.startswith("__")
-        ]
         for key, value in self.device.items():
             self.assertIn(
                 key,
-                values_in_substitutions_file,
+                self.placeholders.values(),
                 msg=(
                     f"Deice info substitutions contains a key ('{key}')"
                     " that is not present in utils.substitution_keys"
@@ -71,22 +50,24 @@ class DeviceInfoTests(TestCase):
     def test_device_info_substitutions_are_correct(self) -> None:
         """Test substitution correctness."""
         expected_substitutions = {
-            IOC_NAME: "ND1",
-            DEVICE_NAME: "New Device 1",
-            DEVICE_SUPPORT_MODULE_NAME: "new_device_1",
-            LEWIS_DEVICE_NAME: "new_device_1",
-            DEVICE_DATABASE_NAME: "new_device_1",
-            DEVICE_PROTOCOL_NAME: "new_device_1",
-            LEWIS_DEVICE_CLASS_NAME: "NewDevice1",
-            SUPPORT_PATH: join(EPICS_SUPPORT, "new_device_1"),
-            SUPPORT_MASTER_PATH: join(EPICS_SUPPORT, "new_device_1", "master"),
-            GITHUB_REPO_NAME: "EPICS-New_Device_1",
-            DEVICE_COUNT: 4,
-            IOC_PATH: join(EPICS, "ioc", "master", "ND1"),
-            IOC_APP_PATH: join(EPICS, "ioc", "master", "ND1", "ND1App"),
-            OPI_FILE_NAME: "new_device_1",
-            OPI_KEY: "ND1",
-            YEAR: get_year(),
+            p.IOC_NAME: "ND1",
+            p.DEVICE_NAME: "New Device 1",
+            p.DEVICE_SUPPORT_MODULE_NAME: "new_device_1",
+            p.LEWIS_DEVICE_NAME: "new_device_1",
+            p.DEVICE_DATABASE_NAME: "new_device_1",
+            p.DEVICE_PROTOCOL_NAME: "new_device_1",
+            p.LEWIS_DEVICE_CLASS_NAME: "NewDevice1",
+            p.SUPPORT_PATH: join(EPICS_SUPPORT, "new_device_1"),
+            p.SUPPORT_MASTER_PATH: join(
+                EPICS_SUPPORT, "new_device_1", "master"
+            ),
+            p.GITHUB_REPO_NAME: "EPICS-New_Device_1",
+            p.DEVICE_COUNT: 4,
+            p.IOC_PATH: join(EPICS, "ioc", "master", "ND1"),
+            p.IOC_APP_PATH: join(EPICS, "ioc", "master", "ND1", "ND1App"),
+            p.OPI_FILE_NAME: "new_device_1",
+            p.OPI_KEY: "ND1",
+            p.YEAR: get_year(),
         }
 
         for key, value in expected_substitutions.items():

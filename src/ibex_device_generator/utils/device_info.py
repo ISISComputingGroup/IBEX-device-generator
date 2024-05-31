@@ -39,6 +39,8 @@ class DeviceInfo(dict):
     and device count.
     """
 
+    editable_substitutions = {p.INDEX}
+
     def __init__(
         self, ioc_name: str, device_name: str, device_count: int = 1
     ) -> None:
@@ -88,12 +90,13 @@ class DeviceInfo(dict):
         self[p.OPI_FILE_NAME]                 = device_name_lower_underscores # noqa
         self[p.OPI_KEY]                       = ioc_name # noqa
         self[p.YEAR]                          = get_year() # noqa
+        self[p.INDEX]                         = "01" # noqa
         # fmt: on
 
     def __setitem__(self, key: Any, value: Any) -> None:
         """Disable value reassignment."""
-        if self.get(key):
-            # Prevent modifying values
+        if self.get(key) and key not in self.editable_substitutions:
+            # Prevent modifying values other than INDEX
             raise ReassignPlaceholderError(
                 "Attempting to modify value in device info dictionary"
             )

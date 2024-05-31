@@ -17,6 +17,10 @@ class DeviceTemplate(Template):
         return self.substitute(device)
 
 
+# __pycache__ folders get added when this package is installed through pip
+ignore_folders = {"__pycache__"}
+
+
 def fill_template_file(
     template: str, destination: str, substitutions: dict[str, str]
 ) -> None:
@@ -81,6 +85,12 @@ def fill_template_tree(
     result_files = []
 
     for item in os.listdir(src):
+        if item in ignore_folders:
+            logging.debug(
+                (f"Ignoring '{item}' in '{src}' while substituting templates.")
+            )
+            continue
+
         # Source
         s = os.path.join(src, item)
         # Substituted destination

@@ -20,7 +20,7 @@ DEVICE_PROTOCOL_NAME = "device_protocol_name"
 """ The device support module's deffault proto file's name """
 
 # Lewis
-LEWIS_DEVICE_NAME = "lewis_device_name"
+LEWIS_DEVICE_NAME = "lewis_name"
 """ Used for naming the lewis device folder """
 
 LEWIS_DEVICE_CLASS_NAME = "lewis_emulator_device_class_name"
@@ -36,6 +36,8 @@ GITHUB_REPO_NAME = "github_repo_name"
 """ GitHub repository name """
 
 DEVICE_COUNT = "device_count"
+
+INDEX = "ioc_number"
 
 # ioc/master
 IOC_PATH = "ioc_path"

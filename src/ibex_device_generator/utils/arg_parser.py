@@ -49,7 +49,6 @@ def parse_arguments() -> Namespace:
         type=device_count_checker,
         help="Number of duplicate device IOCs to generate.",
         default=1,
-        nargs=1,
     )
     parser.add_argument(
         "--use_git",

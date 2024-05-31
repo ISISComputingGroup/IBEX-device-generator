@@ -82,18 +82,18 @@ class RepoWrapper(Repo):
         """
         try:
             logging.info(
-                f"Switching to branch '{branch}' in {self._repo.working_dir}"
+                f"Switching to branch '{branch}' in {self.working_dir}"
             )
-            if str(branch) == str(self._repo.active_branch):
+            if str(branch) == str(self.active_branch):
                 logging.info(f"Already on branch '{branch}'")
                 return
 
-            if branch in self._repo.branches:
+            if branch in self.branches:
                 logging.info("Branch exists, switching to it")
-                self._repo.git.checkout(branch)
+                self.git.checkout(branch)
             else:
                 logging.info("Branch does not exist, making new branch")
-                self._repo.git.checkout("-b", branch)
+                self.git.checkout("-b", branch)
 
         except GitCommandError as e:
             raise FailedToSwitchBranchError(
@@ -115,12 +115,12 @@ class RepoWrapper(Repo):
         )
 
         try:
-            self._repo.git.add(A=True)
-            self._repo.git.commit(m=msg)
+            self.git.add(A=True)
+            self.git.commit(m=msg)
         except (OSError, GitCommandError) as e:
             raise RuntimeError(
                 "Error whilst creating commit in {}: {}".format(
-                    self._repo.working_dir, e
+                    self.working_dir, e
                 )
             )
 
@@ -136,7 +136,7 @@ class RepoWrapper(Repo):
         try:
             branch = "main"
             # create path relative to current root in case path is absolute
-            sub_path = relpath(path, start=self._repo.working_tree_dir)
+            sub_path = relpath(path, start=self.working_tree_dir)
             # We use subprocess here because gitpython seems to add a
             # /refs/heads/ prefix to any branch you give it,
             # and this breaks the repo checks.
@@ -146,7 +146,7 @@ class RepoWrapper(Repo):
             )
             subprocess.run(
                 cmd,
-                cwd=self._repo.working_tree_dir,
+                cwd=self.working_tree_dir,
                 check=True,
             )
 

@@ -22,6 +22,7 @@ extend-select = [
 ignore = [
     "D203",  # 1 blank line required before class docstring
     "D213",  # Multi-line docstring summary should start at the second line
+    "D406",  # Section name should end with a newline ("{name}")
     "D407",  # Missing dashed underline after section ("{name}")
 ]
 

@@ -31,7 +31,7 @@ def create_submodule(device: DeviceInfo) -> None:
 
     # Copy additional template files
     fill_template_tree(
-        os.path.join(TEMPLATES, "phase_add_submodule"),
+        os.path.join(TEMPLATES, "3"),
         EPICS,
         device,
     )
@@ -44,17 +44,20 @@ def create_submodule(device: DeviceInfo) -> None:
 def create_submodule_structure(device: DeviceInfo) -> None:
     """Add basic files into support module folder."""
     fill_template_tree(
-        os.path.join(TEMPLATES, "phase_add_support_submodule"),
+        os.path.join(TEMPLATES, "4"),
         EPICS,
         device,
     )
+
+    # Run make
+    run_command(["make"], device[p.SUPPORT_MASTER_PATH])
 
 
 def create_ioc_from_template(device: DeviceInfo) -> None:
     """Add basic files into ioc/master's relevant directory for the device."""
     # For 1st and main IOC app
     fill_template_tree(
-        os.path.join(TEMPLATES, "phase_add_1st_ioc"),
+        os.path.join(TEMPLATES, "5_1"),
         EPICS,
         device,
     )
@@ -62,11 +65,9 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     # For nth IOC apps
     for i in range(2, device[p.DEVICE_COUNT] + 1):
         subs = device
-        subs["ioc_number"] = "{:02d}".format(i)
+        subs[p.INDEX] = "{:02d}".format(i)
 
-        fill_template_tree(
-            os.path.join(TEMPLATES, "phase_add_nth_ioc"), EPICS, subs
-        )
+        fill_template_tree(os.path.join(TEMPLATES, "5_2"), EPICS, subs)
 
     # Add IOC to Makefile
     add_to_makefile_list(IOC_ROOT, "IOCDIRS", device[p.IOC_NAME])
@@ -78,7 +79,7 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
 def add_test_framework(device: DeviceInfo) -> None:
     """Add files for testing device in support directory."""
     fill_template_tree(
-        os.path.join(TEMPLATES, "phase_add_test_framework"),
+        os.path.join(TEMPLATES, "6"),
         EPICS,
         device,
     )
@@ -87,7 +88,7 @@ def add_test_framework(device: DeviceInfo) -> None:
 def add_lewis_emulator(device: DeviceInfo) -> None:
     """Add lewis emulator files in support directory."""
     fill_template_tree(
-        os.path.join(TEMPLATES, "phase_add_lewis_emulator"),
+        os.path.join(TEMPLATES, "7"),
         EPICS,
         device,
     )
@@ -96,7 +97,7 @@ def add_lewis_emulator(device: DeviceInfo) -> None:
 def add_opi_to_gui(device: DeviceInfo) -> None:
     """Add basic OPI with device key and add this into opi_info.xml."""
     fill_template_tree(
-        os.path.join(TEMPLATES, "phase_add_opi_to_gui"),
+        os.path.join(TEMPLATES, "8"),
         CLIENT_SRC,
         device,
     )
