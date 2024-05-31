@@ -74,6 +74,12 @@ def parse_arguments() -> Namespace:
         choices=["DEBUG", "INFO", "WARN", "ERROR"],
         default="INFO",
     )
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        help="Ask the user to confirm each step before executing.",
+    )
 
     args = parser.parse_args()
 

@@ -34,6 +34,7 @@ class IBEXDeviceGenerator:
         use_git: bool,
         github_token: str,
         ticket_num: int,
+        interactive: bool = True,
         retry: bool = True,
     ) -> None:
         """Create a device generator instance."""
@@ -45,7 +46,15 @@ class IBEXDeviceGenerator:
         self.github_token = github_token
         self.ticket_num = ticket_num
         self.ticket_branch = ticket_branch
+        self.interactive = interactive
         self.retry = retry
+
+    def safe_run(self) -> None:
+        """."""
+        try:
+            self.run()
+        except Exception:
+            logging.error("The last step has failed.")
 
     def run(self) -> None:
         """Run the generator."""
@@ -122,7 +131,9 @@ class IBEXDeviceGenerator:
             **kwargs: any keywoprd arguments for the action
 
         """
-        if not Confirm.ask(f"Do '{commit_msg}'?", default="y"):
+        if self.interactive and not Confirm.ask(
+            f"Do '{commit_msg}'?", default="y"
+        ):
             logging.debug(
                 ":right_arrow:  Skipping step.", extra={"markup": True}
             )
@@ -130,9 +141,11 @@ class IBEXDeviceGenerator:
 
         try:
             if self.use_git and repo_path and commit_msg:
+                logging.info(f"Running '{commit_msg}' with git...")
                 with commit_changes(repo_path, self.ticket_branch, commit_msg):
                     action(*args, **kwargs)
             else:
+                logging.info(f"Running '{commit_msg}'...")
                 action(*args, **kwargs)
 
             logging.info(
@@ -145,6 +158,9 @@ class IBEXDeviceGenerator:
                 ":red_square: Encountered an error: {}".format(e),
                 extra={"markup": True},
             )
-            if self.retry:
+            
+            if self.interactive and self.retry:
                 logging.info("Retrying...")
                 self.add_step(repo_path, commit_msg, action, *args, **kwargs)
+            else:
+                raise Exception("Failed.")

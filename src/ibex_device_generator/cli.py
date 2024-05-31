@@ -31,8 +31,8 @@ def main() -> None:
     )
 
     IBEXDeviceGenerator(
-        device, args.use_git, args.github_token, args.ticket
-    ).run()
+        device, args.use_git, args.github_token, args.ticket, args.interactive
+    ).safe_run()
 
 
 if __name__ == "__main__":
