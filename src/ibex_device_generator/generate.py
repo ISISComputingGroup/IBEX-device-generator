@@ -2,11 +2,9 @@
 
 import logging
 
-from rich.logging import RichHandler
 from rich.prompt import Confirm
 
 from ibex_device_generator.paths import CLIENT, EPICS, IOC_ROOT
-from ibex_device_generator.utils.arg_parser import parse_arguments
 from ibex_device_generator.utils.device_info import DeviceInfo
 from ibex_device_generator.utils.git_utils import commit_changes
 from ibex_device_generator.utils.github import (
@@ -125,7 +123,7 @@ class IBEXDeviceGenerator:
 
         """
         if not Confirm.ask(f"Do '{commit_msg}'?", default="y"):
-            logging.info(
+            logging.debug(
                 ":right_arrow:  Skipping step.", extra={"markup": True}
             )
             return
@@ -150,26 +148,3 @@ class IBEXDeviceGenerator:
             if self.retry:
                 logging.info("Retrying...")
                 self.add_step(repo_path, commit_msg, action, *args, **kwargs)
-
-
-def _configure_logging(level: str = logging.INFO) -> None:
-    logging.basicConfig(
-        level=level,
-        format="%(message)s",
-        datefmt="[%X]",
-        handlers=[RichHandler(rich_tracebacks=True)],
-    )
-
-
-if __name__ == "__main__":
-    args = parse_arguments()
-
-    _configure_logging(level=args.log_level)
-
-    device = DeviceInfo(
-        args.ioc_name, args.device_name, device_count=args.device_count
-    )
-
-    IBEXDeviceGenerator(
-        device, args.use_git, args.github_token, args.ticket
-    ).run()

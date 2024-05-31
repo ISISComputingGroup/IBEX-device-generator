@@ -23,4 +23,3 @@ PERL_SUPPORT_GENERATOR = join(
 )
 
 PROJECT_ROOT = join(dirname(abspath(__file__)))
-TEMPLATES = join(PROJECT_ROOT, "templates")

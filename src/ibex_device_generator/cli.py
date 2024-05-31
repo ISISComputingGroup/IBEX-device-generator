@@ -1,11 +1,23 @@
 """Main file for command line interface."""
 
+import logging
+
+from rich.logging import RichHandler
+
 from ibex_device_generator.generate import (
     IBEXDeviceGenerator,
-    _configure_logging,
 )
 from ibex_device_generator.utils.arg_parser import parse_arguments
 from ibex_device_generator.utils.device_info import DeviceInfo
+
+
+def _configure_logging(level: str = logging.INFO) -> None:
+    logging.basicConfig(
+        level=level,
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[RichHandler(rich_tracebacks=True)],
+    )
 
 
 def main() -> None:

@@ -5,8 +5,10 @@ from tempfile import TemporaryDirectory, gettempdir
 from unittest import TestCase
 
 import ibex_device_generator.utils.placeholders as keys_file
-from ibex_device_generator.paths import TEMPLATES
-from ibex_device_generator.utils.templates import fill_template_tree
+from ibex_device_generator.utils.templates import (
+    get_template,
+    populate_template_dir,
+)
 
 
 class PlaceholderTests(TestCase):
@@ -24,8 +26,8 @@ class PlaceholderTests(TestCase):
             }
 
             try:
-                fill_template_tree(
-                    TEMPLATES, join(gettempdir(), tmpdir), substitutions
+                populate_template_dir(
+                    get_template(), join(gettempdir(), tmpdir), substitutions
                 )
             except KeyError as e:
                 self.fail(

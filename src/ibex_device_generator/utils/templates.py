@@ -2,6 +2,10 @@
 
 import logging
 import os
+import posixpath
+from importlib.resources import files
+from importlib.resources.abc import Traversable
+from os import PathLike
 from string import Template
 
 from ibex_device_generator.utils.device_info import DeviceInfo
@@ -17,91 +21,103 @@ class DeviceTemplate(Template):
         return self.substitute(device)
 
 
-# __pycache__ folders get added when this package is installed through pip
-ignore_folders = {"__pycache__"}
+# __pycache__ folders get added to template directories when this package is
+# installed through pip
+ignore_dirs = {"__pycache__"}
 
 
-def fill_template_file(
-    template: str, destination: str, substitutions: dict[str, str]
-) -> None:
-    """Create a new file based on a template and substitutions.
-
-    Take template file at location and write it out to destination
-    with the substitutions
+def get_template(*pathsegments: str) -> Traversable:
+    """Get a resource located in ibex_device_generator.templates.
 
     Args:
-        template: template file path
-        destination: where to put new file
-        substitutions: substitutions for the template file's content
+        *pathsegments: Segments as subdirectories within the
+            `templates/` directory. If called without any arguments, it returns
+            the reference to the `templates/` directory.
 
-    Raises:
-        KeyError if placeholders are missing from mapping
+    Returns:
+        `importlib.resources.abc.Traversable` representing the template
+        directory/file
 
     """
+    descendants = posixpath.sep.join(pathsegments)
+    item = files("ibex_device_generator.templates").joinpath(descendants)
+
+    if item.is_file() or item.is_dir():
+        return item
+    else:
+        raise ValueError(f"Template does not exist at '{item}'")
+
+
+def populate_template_file(
+    template: Traversable, into: PathLike, substitutions: dict[str, str]
+) -> None:
+    """Populate a single template file into a directory on the disk.
+
+    Args:
+        template: the template that is a Traversable representing a file
+        into: the destination into which resulting file is put
+        substitutions: the map of substitutions in the form of
+            {key: substitution}
+
+    Raises:
+        ValueError: if the template is not a file.
+
+    """
+    if not template.is_file():
+        raise ValueError(f"Template at '{template}' is not a file.")
+
+    substituted_destination = os.path.join(
+        into, DeviceTemplate(template.name).substitute(substitutions)
+    )
+
     logging.debug(
         (
-            f"Using template at '{template}' with substitutions"
-            f" ({substitutions}) to populate '{destination}'"
+            f"Using template file '{template}'\n"
+            f"to populate '{substituted_destination}'"
         )
     )
 
-    # Make directories along the path to the file
-    os.makedirs(os.path.dirname(destination), exist_ok=True)
-    # Read template
-    with open(template, "r") as template_file:
-        src = DeviceTemplate(template_file.read())
-        result = src.substitute(substitutions)
-        # Write substituted file out to destination
-        with open(destination, "w") as destination_file:
-            destination_file.write(result)
+    os.makedirs(os.path.dirname(substituted_destination), exist_ok=True)
+
+    with open(substituted_destination, "w") as file:
+        substituted_content = DeviceTemplate(template.read_text()).substitute(
+            substitutions
+        )
+
+        file.write(substituted_content)
 
 
-def fill_template_tree(
-    src: str, dst: str, substitutions: dict[str, str]
-) -> str:
-    """Recursively create new files based on a template directory.
+def populate_template_dir(
+    template: Traversable, into: PathLike, substitutions: dict[str, str]
+) -> None:
+    """Populate a template file/directory into a location on the disk.
 
-    Copies the template files located in src directory recursively into
-    the destination directory dst substituting all placeholders within
-    directory names and file contents.
+    This only creates folders that contain at least one file.
 
     Args:
-        src: Root directory of template files
-        dst: Destination root directory
+        template: the template that is a Traversable representing either
+            a directory or a single file.
+        into: the destination into which resulting items are put
         substitutions: The map of substitutions in the form of
             {key: substitution}
 
-    Returns:
-        List of absolute file paths that were written out.
-
     """
-    logging.debug(
-        (
-            f"Using templates in directory '{src}' with substitutions"
-            f" ({substitutions}) to populate '{dst}'"
+    if not template.is_dir():
+        raise ValueError(f"Template at '{template}' is not a directory.")
+
+    if template.name in ignore_dirs:
+        logging.debug(
+            f"[yellow]Ignoring template directory '{template}'",
+            extra={"markup": True},
         )
-    )
+        return
 
-    result_files = []
+    for item in template.iterdir():
+        if item.is_file():
+            populate_template_file(item, into, substitutions)
 
-    for item in os.listdir(src):
-        if item in ignore_folders:
-            logging.debug(
-                (f"Ignoring '{item}' in '{src}' while substituting templates.")
+        if item.is_dir():
+            substituted_destination = os.path.join(
+                into, DeviceTemplate(item.name).substitute(substitutions)
             )
-            continue
-
-        # Source
-        s = os.path.join(src, item)
-        # Substituted destination
-        d = DeviceTemplate(os.path.join(dst, item)).substitute(substitutions)
-
-        if os.path.isdir(s):
-            os.makedirs(d, exist_ok=True)
-            files = fill_template_tree(s, d, substitutions)
-            result_files.extend(files)
-        else:
-            fill_template_file(s, d, substitutions)
-            result_files.append(d)
-
-    return result_files
+            populate_template_dir(item, substituted_destination, substitutions)
