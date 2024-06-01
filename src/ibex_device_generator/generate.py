@@ -91,7 +91,10 @@ class IBEXDeviceGenerator:
         )
 
         self.add_step(
-            IOC_ROOT, "Add template IOC", create_ioc_from_template, self.device
+            IOC_ROOT,
+            "Add template IOC",
+            create_ioc_from_template,
+            self.device,
         )
 
         self.add_step(
@@ -108,7 +111,12 @@ class IBEXDeviceGenerator:
             self.device,
         )
 
-        self.add_step(CLIENT, "Add OPI to gui", add_opi_to_gui, self.device)
+        self.add_step(
+            CLIENT,
+            "Add OPI to gui",
+            add_opi_to_gui,
+            self.device,
+        )
 
     def add_step(
         self,
@@ -155,10 +163,10 @@ class IBEXDeviceGenerator:
 
         except Exception as e:
             logging.error(
-                ":red_square: Encountered an error: {}".format(e),
+                f"[red]{e}",
                 extra={"markup": True},
             )
-            
+
             if self.interactive and self.retry:
                 logging.info("Retrying...")
                 self.add_step(repo_path, commit_msg, action, *args, **kwargs)

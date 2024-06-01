@@ -28,7 +28,6 @@ def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
     for line in text:
         if entry in line:
             # Entry already in the list
-            logging.warn("IOC name already added to {}".format(list_name))
             return text
         elif marker in last_line and marker not in line:
             # We found the end of the list
@@ -39,7 +38,7 @@ def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
     return new_text  # return Makefile with new entry
 
 
-def add_to_makefile_list(directory: str, list_name: str, entry: str) -> None:
+def add_to_makefile_list(directory: str, list_name: str, entry: str) -> bool:
     """Add entry to prefixed list in a Makefile.
 
     Adds an entry to a list in a makefile. Finds the last line of the form
@@ -60,5 +59,18 @@ def add_to_makefile_list(directory: str, list_name: str, entry: str) -> None:
     with open(makefile) as f:
         old_lines = f.readlines()
 
+    new_lines = _add_entry_to_list(old_lines, list_name, entry)
+
+    if old_lines == new_lines:
+        logging.warn(
+            (
+                f"Entry '{entry}' is already added to list '{list_name}' in"
+                f" '{makefile}'."
+            )
+        )
+        return False
+
     with open(makefile, "w") as f:
-        f.writelines(_add_entry_to_list(old_lines, list_name, entry))
+        f.writelines(new_lines)
+
+    return True

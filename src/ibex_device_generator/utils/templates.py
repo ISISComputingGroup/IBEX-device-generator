@@ -50,7 +50,7 @@ def get_template(*pathsegments: str) -> Traversable:
 
 def populate_template_file(
     template: Traversable, into: PathLike, substitutions: dict[str, str]
-) -> None:
+) -> PathLike:
     """Populate a single template file into a directory on the disk.
 
     Args:
@@ -58,6 +58,9 @@ def populate_template_file(
         into: the destination into which resulting file is put
         substitutions: the map of substitutions in the form of
             {key: substitution}
+
+    Returns:
+        The path to the new file made from the template.
 
     Raises:
         ValueError: if the template is not a file.
@@ -85,12 +88,13 @@ def populate_template_file(
         )
 
         file.write(substituted_content)
+    return substituted_destination
 
 
 def populate_template_dir(
     template: Traversable, into: PathLike, substitutions: dict[str, str]
-) -> None:
-    """Populate a template file/directory into a location on the disk.
+) -> list[PathLike]:
+    """Populate a template directory into a location on the disk.
 
     This only creates folders that contain at least one file.
 
@@ -101,23 +105,33 @@ def populate_template_dir(
         substitutions: The map of substitutions in the form of
             {key: substitution}
 
+    Returns:
+        A list of paths to the new files made from the template.
+
     """
     if not template.is_dir():
         raise ValueError(f"Template at '{template}' is not a directory.")
+
+    files = []
 
     if template.name in ignore_dirs:
         logging.debug(
             f"[yellow]Ignoring template directory '{template}'",
             extra={"markup": True},
         )
-        return
+        return files
 
     for item in template.iterdir():
         if item.is_file():
-            populate_template_file(item, into, substitutions)
+            files.append(populate_template_file(item, into, substitutions))
 
         if item.is_dir():
             substituted_destination = os.path.join(
                 into, DeviceTemplate(item.name).substitute(substitutions)
             )
-            populate_template_dir(item, substituted_destination, substitutions)
+            files.extend(
+                populate_template_dir(
+                    item, substituted_destination, substitutions
+                )
+            )
+    return files

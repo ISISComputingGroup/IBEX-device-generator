@@ -4,6 +4,7 @@ This is sometimes done via the command line and other times the PythonGit API.
 """
 
 import logging
+import os
 import subprocess
 from contextlib import contextmanager
 from os.path import relpath
@@ -13,12 +14,11 @@ from git import (
     GitCommandError,
     GitError,
     InvalidGitRepositoryError,
+    NoSuchPathError,
     Repo,
     RepositoryDirtyError,
 )
 from rich.prompt import Confirm
-
-from ibex_device_generator.utils.github import EPICS_REPO_NAME, github_repo_url
 
 
 class FailedToSwitchBranchError(GitError):
@@ -27,10 +27,17 @@ class FailedToSwitchBranchError(GitError):
     pass
 
 
-class WrongRepositoryOriginError(GitError):
-    """Expected origin and actual origin mismatch."""
+class CannotOpenRepoError(GitError):
+    """Thrown when GitPython cannot be initialised at path."""
 
-    pass
+    def __init__(self, path: str) -> None:  # noqa: D107
+        self.path = path
+
+    def __str__(self) -> str:  # noqa: D105
+        return (
+            "Cannot open git repository at %s."
+            " Check if git repo exists at location." % self.path
+        )
 
 
 class RepoWrapper(Repo):
@@ -39,7 +46,6 @@ class RepoWrapper(Repo):
     def __init__(
         self,
         path: str,
-        origin: str = github_repo_url(EPICS_REPO_NAME),
         init: bool = False,
     ) -> None:
         """Attach to existing git repository or initialise a new.
@@ -57,21 +63,13 @@ class RepoWrapper(Repo):
         """
         try:
             super().__init__(path)
-            if self.remote().url != origin:
-                raise WrongRepositoryOriginError(
-                    (
-                        f"Expected git repository at '{path}' to have remote"
-                        f" origin set to '{origin}' instead it tracks"
-                        f" '{self.remote().url}'"
-                    )
-                )
-
-        except InvalidGitRepositoryError as error:
+        except (InvalidGitRepositoryError, NoSuchPathError):
+            # This might be overkill for our use case but here we go
             if init:
+                os.makedirs(os.path.dirname(path), exist_ok=True)
                 self.init(path, initial_branch="main")
-                self.create_remote("origin", origin)
             else:
-                raise error
+                raise CannotOpenRepoError(path)
 
     def switch(self, branch: str = "main") -> None:
         """Switch to branch. Creates it if needed.
@@ -154,6 +152,7 @@ class RepoWrapper(Repo):
             logging.error(
                 "Cannot add {} as a submodule, error: {}".format(path, e)
             )
+            raise e
         except Exception as e:
             raise RuntimeError(
                 (
@@ -165,7 +164,10 @@ class RepoWrapper(Repo):
 
 @contextmanager
 def commit_changes(
-    repo_path: str, branch: str, msg: str, confirm_commit: bool = True
+    repo_path: str,
+    branch: str,
+    msg: str,
+    confirm_commit: bool = True,
 ) -> Generator[RepoWrapper, None, None]:
     """Switches to a branch and makes commit.
 
@@ -184,11 +186,12 @@ def commit_changes(
         and str(repo.active_branch) != branch
     ):
         raise RepositoryDirtyError(
+            repo,
             (
                 f"Please make sure git status is clean in"
                 f"'{repo.working_tree_dir}' and that the active branch"
                 f" is main/master or {branch}."
-            )
+            ),
         )
 
     repo.switch(branch)

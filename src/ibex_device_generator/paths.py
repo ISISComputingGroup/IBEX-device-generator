@@ -6,7 +6,7 @@ from os.path import abspath, dirname, join
 INSTRUMENT = join("C:\\", "Instrument")
 EPICS = getenv("EPICS_KIT_ROOT", join(INSTRUMENT, "Apps", "EPICS"))
 
-IOC_ROOT = join(EPICS, "IOC", "master")
+IOC_ROOT = join(EPICS, "ioc", "master")
 PERL = join("C:\\", "Strawberry", "perl", "bin", "perl.exe")
 EPICS_BASE_BUILD = join(EPICS, "base", "master", "bin")
 ARCHITECTURE = getenv("EPICS_HOST_ARCH", "windows-x64")

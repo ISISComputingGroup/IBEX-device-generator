@@ -12,24 +12,36 @@ EPICS_REPO_NAME = "EPICS"
 IBEX_CLIENT_REPO_NAME = "ibex_gui"
 
 
-class NoGitHubTokenError(Exception):
+class IBEXDeviceGeneratorError(Exception):
+    """Base class for all package exceptions."""
+
+
+class NoGitHubTokenError(IBEXDeviceGeneratorError):
     """GitHub token is not specified."""
 
-    def __init__(self, *args: object) -> None:
-        """Init default error."""
-        super().__init__("GitHub token is not specified.", *args)
+    def __str__(self) -> str:  # noqa: D105
+        return (
+            "GitHub token is not specified. Rerun the command with the"
+            " '--github_token <your_token>' option."
+        )
 
 
-class FailedToCreateGitHubRepositoryError(Exception):
-    """For some reason git repo could not be created."""
+class FailedToCreateGitHubRepositoryError(IBEXDeviceGeneratorError):
+    """Thrown when repo could not be created on GitHub."""
 
-    pass
+    def __init__(self, org: str, repo: str) -> None:  # noqa: D107
+        self.org = org
+        self.repo = repo
+
+    def __str__(self) -> str:  # noqa: D105
+        return "Failed to create repo %s within organisation %s" % (
+            self.repo,
+            self.org,
+        )
 
 
-class FailedToGrantPermissionError(Exception):
+class FailedToGrantPermissionError(IBEXDeviceGeneratorError):
     """For some reason could not grant permission."""
-
-    pass
 
 
 def create_github_repository(device: DeviceInfo, github_token: str) -> None:
@@ -65,10 +77,7 @@ def create_github_repository(device: DeviceInfo, github_token: str) -> None:
         )
     else:
         raise FailedToCreateGitHubRepositoryError(
-            (
-                f"Failed to create repository [{response.status_code}]:"
-                f" {response.reason}"
-            )
+            ORGANIZATION_NAME, device[GITHUB_REPO_NAME]
         )
 
 
