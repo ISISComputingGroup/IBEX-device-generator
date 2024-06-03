@@ -12,32 +12,16 @@ from typing import Generator
 
 from git import (
     GitCommandError,
-    GitError,
     InvalidGitRepositoryError,
     NoSuchPathError,
     Repo,
-    RepositoryDirtyError,
 )
 from rich.prompt import Confirm
 
-
-class FailedToSwitchBranchError(GitError):
-    """Switching branch failed."""
-
-    pass
-
-
-class CannotOpenRepoError(GitError):
-    """Thrown when GitPython cannot be initialised at path."""
-
-    def __init__(self, path: str) -> None:  # noqa: D107
-        self.path = path
-
-    def __str__(self) -> str:  # noqa: D105
-        return (
-            "Cannot open git repository at %s."
-            " Check if git repo exists at location." % self.path
-        )
+from ibex_device_generator.exc import (
+    CannotOpenRepoError,
+    FailedToSwitchBranchError,
+)
 
 
 class RepoWrapper(Repo):
@@ -94,9 +78,7 @@ class RepoWrapper(Repo):
                 self.git.checkout("-b", branch)
 
         except GitCommandError as e:
-            raise FailedToSwitchBranchError(
-                "Error whilst creating git branch, {}".format(e)
-            )
+            raise FailedToSwitchBranchError(self, branch, e)
 
     def commit_all(self, msg: str) -> None:
         """Commit all changes and untracked files in the repository.
@@ -185,11 +167,12 @@ def commit_changes(
         and str(repo.active_branch) != "master"
         and str(repo.active_branch) != branch
     ):
-        raise RepositoryDirtyError(
+        raise FailedToSwitchBranchError(
             repo,
+            branch,
             (
                 f"Please make sure git status is clean in"
-                f"'{repo.working_tree_dir}' and that the active branch"
+                f" '{repo.working_tree_dir}' and that the active branch"
                 f" is main/master or {branch}."
             ),
         )

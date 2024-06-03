@@ -4,32 +4,14 @@ from os.path import join
 from typing import Any
 
 import ibex_device_generator.utils.placeholders as p
+from ibex_device_generator.exc import (
+    InvalidDeviceCountError,
+    InvalidDeviceNameError,
+    InvalidIOCNameError,
+    ReassignPlaceholderError,
+)
 from ibex_device_generator.paths import EPICS, EPICS_SUPPORT
 from ibex_device_generator.utils.date import get_year
-
-
-class InvalidIOCNameError(ValueError):
-    """Indicate that IOC name is invalid."""
-
-    pass
-
-
-class InvalidDeviceNameError(ValueError):
-    """Indicate that device name is invalid."""
-
-    pass
-
-
-class InvalidIOCCountError(ValueError):
-    """Indicate that device count is invalid."""
-
-    pass
-
-
-class ReassignPlaceholderError(Exception):
-    """Indicate that a value cannot be reassigned."""
-
-    pass
 
 
 class DeviceInfo(dict):
@@ -61,13 +43,13 @@ class DeviceInfo(dict):
 
         """
         if not is_valid_ioc_name(ioc_name):
-            raise InvalidIOCNameError()
+            raise InvalidIOCNameError(ioc_name)
 
         if not is_valid_device_name(device_name):
-            raise InvalidDeviceNameError()
+            raise InvalidDeviceNameError(device_name)
 
         if not is_valid_device_count(device_count):
-            raise InvalidIOCCountError()
+            raise InvalidDeviceCountError(device_count)
 
         device_name_lower_underscores = device_name.lower().replace(" ", "_")
 
@@ -97,9 +79,7 @@ class DeviceInfo(dict):
         """Disable value reassignment."""
         if self.get(key) and key not in self.editable_substitutions:
             # Prevent modifying values other than INDEX
-            raise ReassignPlaceholderError(
-                "Attempting to modify value in device info dictionary"
-            )
+            raise ReassignPlaceholderError(key)
         else:
             super().__setitem__(key, value)
 
@@ -115,7 +95,7 @@ class DeviceInfo(dict):
 
         """
         if not 0 < index < 100:
-            raise InvalidIOCCountError()
+            raise InvalidDeviceCountError(index)
 
         return "{}-IOC-{:02d}".format(self._ioc_name, index)
 

@@ -4,11 +4,13 @@ from os.path import join
 from unittest import TestCase
 
 import ibex_device_generator.utils.placeholders as p
+from ibex_device_generator.exc import (
+    InvalidDeviceNameError,
+    InvalidIOCNameError,
+)
 from ibex_device_generator.paths import EPICS, EPICS_SUPPORT
 from ibex_device_generator.utils.device_info import (
     DeviceInfo,
-    InvalidDeviceNameError,
-    InvalidIOCNameError,
     get_year,
 )
 

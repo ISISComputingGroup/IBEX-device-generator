@@ -5,6 +5,7 @@ import os
 from os import PathLike
 
 import ibex_device_generator.utils.placeholders as p
+from ibex_device_generator.exc import CommandNotFoundError
 from ibex_device_generator.paths import (
     CLIENT_SRC,
     EPICS,
@@ -15,7 +16,7 @@ from ibex_device_generator.paths import (
 from ibex_device_generator.utils.command import run_make_command_in
 from ibex_device_generator.utils.device_info import DeviceInfo
 from ibex_device_generator.utils.file_system import add_to_makefile_list
-from ibex_device_generator.utils.git_utils import RepoWrapper
+from ibex_device_generator.utils.git import RepoWrapper
 from ibex_device_generator.utils.github import github_repo_url
 from ibex_device_generator.utils.gui import (
     DuplicateOPIKeyError,
@@ -60,7 +61,10 @@ def create_submodule_structure(device: DeviceInfo) -> None:
     added_files = populate_template_dir(get_template("4"), EPICS, device)
 
     # Run make
-    run_make_command_in(device[p.SUPPORT_MASTER_PATH])
+    try:
+        run_make_command_in(device[p.SUPPORT_MASTER_PATH])
+    except CommandNotFoundError as e:
+        logging.warning(e)
 
     log_file_changes(added_files=added_files)
 
@@ -88,7 +92,10 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
     )
 
     # Run make
-    run_make_command_in(device[p.IOC_PATH])
+    try:
+        run_make_command_in(device[p.IOC_PATH])
+    except CommandNotFoundError as e:
+        logging.warning(e)
 
     log_file_changes(
         added_files=added_files,

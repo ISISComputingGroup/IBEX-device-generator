@@ -4,44 +4,17 @@ import logging
 
 import requests
 
+from ibex_device_generator.exc import (
+    FailedToCreateGitHubRepositoryError,
+    FailedToGrantPermissionError,
+    NoGitHubTokenError,
+)
 from ibex_device_generator.utils.device_info import DeviceInfo
 from ibex_device_generator.utils.placeholders import GITHUB_REPO_NAME
 
 ORGANIZATION_NAME = "ISISComputingGroup"
 EPICS_REPO_NAME = "EPICS"
 IBEX_CLIENT_REPO_NAME = "ibex_gui"
-
-
-class IBEXDeviceGeneratorError(Exception):
-    """Base class for all package exceptions."""
-
-
-class NoGitHubTokenError(IBEXDeviceGeneratorError):
-    """GitHub token is not specified."""
-
-    def __str__(self) -> str:  # noqa: D105
-        return (
-            "GitHub token is not specified. Rerun the command with the"
-            " '--github_token <your_token>' option."
-        )
-
-
-class FailedToCreateGitHubRepositoryError(IBEXDeviceGeneratorError):
-    """Thrown when repo could not be created on GitHub."""
-
-    def __init__(self, org: str, repo: str) -> None:  # noqa: D107
-        self.org = org
-        self.repo = repo
-
-    def __str__(self) -> str:  # noqa: D105
-        return "Failed to create repo %s within organisation %s" % (
-            self.repo,
-            self.org,
-        )
-
-
-class FailedToGrantPermissionError(IBEXDeviceGeneratorError):
-    """For some reason could not grant permission."""
 
 
 def create_github_repository(device: DeviceInfo, github_token: str) -> None:
@@ -77,7 +50,7 @@ def create_github_repository(device: DeviceInfo, github_token: str) -> None:
         )
     else:
         raise FailedToCreateGitHubRepositoryError(
-            ORGANIZATION_NAME, device[GITHUB_REPO_NAME]
+            ORGANIZATION_NAME, device[GITHUB_REPO_NAME], response.reason
         )
 
 
@@ -111,10 +84,7 @@ def grant_permission(
         )
     else:
         raise FailedToGrantPermissionError(
-            (
-                f"Failed to grant permission [{response.status_code}]"
-                f" {response.reason}"
-            )
+            permission, repository_name, response.reason
         )
 
 

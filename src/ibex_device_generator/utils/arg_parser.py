@@ -3,6 +3,11 @@
 import argparse
 from argparse import ArgumentTypeError, Namespace
 
+from ibex_device_generator.exc import (
+    InvalidDeviceCountError,
+    InvalidDeviceNameError,
+    InvalidIOCNameError,
+)
 from ibex_device_generator.utils.device_info import (
     is_valid_device_count,
     is_valid_device_name,
@@ -95,21 +100,14 @@ def parse_arguments() -> Namespace:
 def ioc_name_checker(ioc_name: str) -> str:
     """Check IOC name validity."""
     if not is_valid_ioc_name(ioc_name):
-        raise ArgumentTypeError(
-            (
-                "IOC Name is invalid. Make sure IOC name is an alphanumeric "
-                "string, all upper case and the length is between 1 to 8."
-            )
-        )
+        raise ArgumentTypeError(str(InvalidIOCNameError(ioc_name)))
     return ioc_name
 
 
 def device_name_checker(device_name: str) -> str:
     """Check device name validity."""
     if not is_valid_device_name(device_name):
-        raise ArgumentTypeError(
-            "Device name is invalid. Must consist of ASCII characters."
-        )
+        raise ArgumentTypeError(str(InvalidDeviceNameError(device_name)))
     return device_name
 
 
@@ -117,7 +115,7 @@ def device_count_checker(val: str) -> int:
     """Check device count validity."""
     count = int(val)
     if not is_valid_device_count(count):
-        raise ArgumentTypeError("Device count must be between 0 and 100.")
+        raise ArgumentTypeError(str(InvalidDeviceCountError(count)))
     return count
 
 

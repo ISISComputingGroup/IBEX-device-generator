@@ -6,19 +6,24 @@ import os
 from lxml import etree
 from lxml.etree import ElementTree
 
+from ibex_device_generator.exc import IBEXDeviceGeneratorError
 from ibex_device_generator.paths import OPI_RESOURCES
 from ibex_device_generator.utils.device_info import DeviceInfo
 from ibex_device_generator.utils.placeholders import OPI_KEY
 from ibex_device_generator.utils.templates import DeviceTemplate
 
 
-class DuplicateOPIKeyError(Exception):
+class DuplicateOPIKeyError(IBEXDeviceGeneratorError):
     """Indicate that an OPI key already exists.
 
     OPIs are identified by their keys and so this must be unique.
     """
 
-    pass
+    def __init__(self, opi_key: str) -> None:  # noqa: D107
+        self.opi_key = opi_key
+
+    def __str__(self) -> str:  # noqa: D105
+        return "OPI key '%s' already exists in opi_info.xml" % self.opi_key
 
 
 # Following xml entry is used in opi_info.xml which holds the
@@ -82,7 +87,7 @@ def add_device_opi_to_opi_info(device: DeviceInfo) -> None:
     opis = opi_xml.find("opis")
     opi_key = device[OPI_KEY]
     if any(entry.find("key").text == opi_key for entry in opis):
-        raise DuplicateOPIKeyError(f"OPI with key '{opi_key}' already exists.")
+        raise DuplicateOPIKeyError(opi_key)
 
     opis.append(_generate_opi_entry(device))
     with open(opi_info_path, "w") as f:

@@ -4,9 +4,10 @@ import logging
 
 from rich.prompt import Confirm
 
+from ibex_device_generator.exc import IBEXDeviceGeneratorError
 from ibex_device_generator.paths import CLIENT, EPICS, IOC_ROOT
 from ibex_device_generator.utils.device_info import DeviceInfo
-from ibex_device_generator.utils.git_utils import commit_changes
+from ibex_device_generator.utils.git import commit_changes
 from ibex_device_generator.utils.github import (
     create_github_repository,
     grant_permissions_for_github_repository,
@@ -53,8 +54,8 @@ class IBEXDeviceGenerator:
         """."""
         try:
             self.run()
-        except Exception:
-            logging.error("The last step has failed.")
+        except IBEXDeviceGeneratorError:
+            logging.info("The last failed.")
 
     def run(self) -> None:
         """Run the generator."""
@@ -161,7 +162,7 @@ class IBEXDeviceGenerator:
                 extra={"markup": True},
             )
 
-        except Exception as e:
+        except IBEXDeviceGeneratorError as e:
             logging.error(
                 f"[red]{e}",
                 extra={"markup": True},
@@ -171,4 +172,4 @@ class IBEXDeviceGenerator:
                 logging.info("Retrying...")
                 self.add_step(repo_path, commit_msg, action, *args, **kwargs)
             else:
-                raise Exception("Failed.")
+                raise IBEXDeviceGeneratorError("Failed.")

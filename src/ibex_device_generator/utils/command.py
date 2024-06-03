@@ -6,11 +6,9 @@ import subprocess
 from os import PathLike, devnull
 from typing import Sequence, TypeAlias
 
+from ibex_device_generator.exc import CommandNotFoundError
+
 StrOrBytesPath: TypeAlias = str | bytes | PathLike[str] | PathLike[bytes]
-
-
-class MakeCommandNotFoundError(Exception):
-    """Raised when make command is not found on system."""
 
 
 def run_command(
@@ -40,9 +38,7 @@ def run_command(
     return cmd.wait()
 
 
-def run_make_command_in(
-    dir: PathLike, raise_if_make_not_found: bool = False
-) -> int:
+def run_make_command_in(dir: PathLike) -> int:
     """Run make command in directory.
 
     By default allow this command to fail. If not called from EPICS terminal
@@ -57,8 +53,7 @@ def run_make_command_in(
         the exit code after running the command
 
     Raises:
-        MakeCommandNotFoundError: if make is unavailable and
-            `raise_if_make_not_found` flag is set to True.
+        CommandNotFoundError: if make is unavailable
 
     """
     make_command = "make"
@@ -68,13 +63,7 @@ def run_make_command_in(
     if fully_qualified_executable_path:
         return run_command(fully_qualified_executable_path, dir)
     else:
-        logging.warning(
-            (
-                f"Failed to execute command '{make_command}' in '{dir}'."
-                f"Cannot find executable for command '{make_command}'"
-            )
+        raise CommandNotFoundError(
+            make_command,
+            f"Failed to execute command '{make_command}' in '{dir}'.",
         )
-        if raise_if_make_not_found:
-            raise MakeCommandNotFoundError
-
-        return 1
