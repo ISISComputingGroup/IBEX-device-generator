@@ -77,9 +77,18 @@ When using a template most of these substitutions must be present.
 ## Development
 
 
-Make changes
-
-run the following from this projects root
+To test changes made to this package you can install it directly with pip via:
 ```
 pip install .
+```
+
+
+### Run Tests
+
+
+With __pytest__ just run the `pytest` command in the project's root.
+
+With __unittest__, run the following command from the `src/` directory:
+```
+python -m unittest discover -s ..
 ```

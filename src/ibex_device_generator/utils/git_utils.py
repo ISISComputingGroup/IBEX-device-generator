@@ -31,6 +31,8 @@ class RepoWrapper(Repo):
         self,
         path: str,
         init: bool = False,
+        *args,
+        **kwargs,
     ) -> None:
         """Attach to existing git repository or initialise a new.
 
@@ -43,15 +45,18 @@ class RepoWrapper(Repo):
                 remote origin.
             init: If True git repo is initialised at directory if it
                 doesn't exist.
+            *args: any additional positional arguments
+            **kwargs: any additional keyword arguments
 
         """
         try:
-            super().__init__(path)
+            super().__init__(path, *args, **kwargs)
         except (InvalidGitRepositoryError, NoSuchPathError):
             # This might be overkill for our use case but here we go
             if init:
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 self.init(path, initial_branch="main")
+                super().__init__(path, *args, **kwargs)
             else:
                 raise CannotOpenRepoError(path)
 
