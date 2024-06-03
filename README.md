@@ -1,52 +1,54 @@
 # IBEX Device Generator
 
+
 > [!WARNING]
-> **Known limitation**
-> On the add OPI to gui step the script will fail to commit due to a git commit hook that usually changes opi-s by adding "dummy widgets"
-> Workaround: You can manually commit the added files afterwards
+> **Might fail to commit because of commit hook in ibex_gui**
+> On the add OPI to gui step the script might fail to commit due to a git commit hook that usually changes opi-s by adding "dummy widgets"
+> Workaround: You can manually commit the added files afterwards or run that step without the --use_git flag.
+
+
+> [!IMPORTANT]
+> This script does not push to remote repositories at any stage __by design__. Instead it makes local commits (if --use_git) that can be verified and later pushed to the appropriate upstream repos by the developer.
+
 
 ## Installation
+
 
 ```
 pip install git+https://github.com/ISISComputingGroup/IBEX-device-generator.git
 ```
 
+[More details on pip version control system (VCS) support...](https://pip.pypa.io/en/stable/topics/vcs-support/)
+
+## Example Usage
+
+
+1. Make sure the following repos are on __master__/__main__ branch and git status is clean: `Instrument/Apps/EPICS`, `Instrument/Apps/EPICS/ioc/master`, `Instrument/Dev/ibex_gui`.
+
+2. Open a terminal that has python installed. (Add `C:\Instrument\Apps\Python3` and `C:/Instrument/Apps/Python3/Scripts` to your PATH if not there alredy.)
+
+3. Run the following command to start device generation:
+    ```
+    ibex_device_generator <ioc_name> <ticket_number> --device_name <device_name> --device_count <device_count> --use_git --github_token <your_github_token> -i
+    ```
+
+4. Verify that the device has been generated successfuly by running the (system tests) `run_tests.bat` in `C:/Instrument/Apps/EPICS/support/<device_name>/master/system_tests`
+
+Throughout this example substitute <ioc_name>, <device_name>, <device_count> etc. according to your needs.
+
+
 ## Usage
 
+
 ```
-usage: ibex_device_generator [-h] [--device_name DEVICE_NAME] [--device_count DEVICE_COUNT] [--use_git]
+ibex_device_generator [-h] [--device_name DEVICE_NAME] [--device_count DEVICE_COUNT] [--use_git]
                              [--github_token GITHUB_TOKEN] [--log_level {DEBUG,INFO,WARN,ERROR}]
                              ioc_name ticket
-
-IBEX Device IOC Generator. Generate boilerplate code for IBEX device support.
-
-positional arguments:
-  ioc_name              Name of the IOC. This name is used in the ioc/master submodule and PVs will use this name.
-  ticket                GitHub issue 'ticket' number within our development workflow.
-
-options:
-  -h, --help            show this help message and exit
-  --device_name DEVICE_NAME
-                        Name of the device, this name will be used to create suppport submodule and GitHub repository. If not      
-                        specified it defaults to be the same as the IOC name.
-  --device_count DEVICE_COUNT
-                        Number of duplicate device IOCs to generate.
-  --use_git             Create/switch to ticket branches and make commits accordingly at every step. The script will abort if the  
-                        git status is dirty at the respective repositories.
-  --github_token GITHUB_TOKEN
-                        GitHub token with "repo" scope. Use to create support repository.
-  --log_level {DEBUG,INFO,WARN,ERROR}
-                        Logging level.
 ```
 
 For the generator to run smoothly, please make sure the git status is clean in the directories where the script is making modifications.
-For example in EPICS top, ioc/master. If git status is not clean the script will abort at that step when `--use_git` flag is specified.
+For example in EPICS top, ioc/master. If git status is not clean the script will raise an error at that step when `--use_git` flag is specified.
 
-#### Example usage in an EPICS terminal:
-
-```
-%python3% generate.py <ioc name> <ticket> --device_name <device name> --use_git --github_token <github token>
-```
 
 #### GitHub Token
 
@@ -55,11 +57,14 @@ The GitHub token is needed for the script to be able to create repository. GitHu
 
 ## Templates
 
+
 The templates for the file structure generation can be found in the `templates` directory.
+
 
 ### Placeholders
 
-For a fill list of placeholders see [placeholderss.py](./utils/placeholderss.py).
+
+See [placeholders.py](./utils/placeholderss.py) for a complete list of placeholders and their descriptions.
 
 Placeholders in the templates can be anywhere (including file names, directory names or file content). They are preceeded by the '@' delimiter. When the placeholder is not followed by a space use @{placeholder}.
 
@@ -68,16 +73,9 @@ Placeholders in the templates can be anywhere (including file names, directory n
 
 When using a template most of these substitutions must be present.
 
-| placeholder | comments |
-| ----------- | -------- |
-| `ioc_name` | This is the IOC name passed down as command line argument when invoking the script. |
-| `device_name` | The device name can be longer and can contain spaces. This will be used to name the support module folder and the GitHub repository. |
-| `device_support_module_name` | This is the name of the directory within `EPICS/support/@{device_}`. It is usually the lower case device name where we use '_'-s instead of spaces. |
-| `ioc_number` | This is relevant when referring to the structure of the n-nth IOC. If there are multiple device IOCs within the `EPICS/ioc/master/@{ioc}` such as `@{ioc}-IOC-01App`, `@{ioc}-IOC-02App` etc. `ioc_number` must be a string that represents a number using two digits always (e.g. 01, 03, 14).
-| `lewis_device_name` | This is usually the lower case device name where spaces have been replaced with '_'-s. This is used for example in the `EPICS/support/@{device_}\system_tests` directory to create the lewis emulator folder. |
-| `lewis_emulator_device_class_name` | This is a snake case representation of the `device_name` usually to use for naming the python class that represents the emulator for the device. |
 
 ## Development
+
 
 Make changes
 
