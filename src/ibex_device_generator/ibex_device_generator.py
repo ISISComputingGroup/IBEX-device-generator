@@ -7,7 +7,7 @@ from rich.prompt import Confirm
 from ibex_device_generator.exc import IBEXDeviceGeneratorError
 from ibex_device_generator.paths import CLIENT, EPICS, IOC_ROOT
 from ibex_device_generator.utils.device_info import DeviceInfo
-from ibex_device_generator.utils.git import commit_changes
+from ibex_device_generator.utils.git_utils import commit_changes
 from ibex_device_generator.utils.github import (
     create_github_repository,
     grant_permissions_for_github_repository,

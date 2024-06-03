@@ -16,13 +16,13 @@ from ibex_device_generator.paths import (
 from ibex_device_generator.utils.command import run_make_command_in
 from ibex_device_generator.utils.device_info import DeviceInfo
 from ibex_device_generator.utils.file_system import add_to_makefile_list
-from ibex_device_generator.utils.git import RepoWrapper
+from ibex_device_generator.utils.git_utils import RepoWrapper
 from ibex_device_generator.utils.github import github_repo_url
 from ibex_device_generator.utils.gui import (
     DuplicateOPIKeyError,
     add_device_opi_to_opi_info,
 )
-from ibex_device_generator.utils.rich import rich_print, tree_from_paths
+from ibex_device_generator.utils.rich_utils import rich_print, tree_from_paths
 from ibex_device_generator.utils.templates import (
     get_template,
     populate_template_dir,
