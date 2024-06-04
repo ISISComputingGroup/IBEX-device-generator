@@ -60,6 +60,15 @@ class RepoWrapper(Repo):
             else:
                 raise CannotOpenRepoError(path)
 
+    @property
+    def active_branch_or_none(self) -> str | None:
+        """Get active branch or None if HEAD is detached."""
+        try:
+            return str(self.active_branch)
+        except TypeError:
+            # HEAD is detached
+            return None
+
     def switch(self, branch: str = "main") -> None:
         """Switch to branch. Creates it if needed.
 
@@ -71,7 +80,7 @@ class RepoWrapper(Repo):
             logging.info(
                 f"Switching to branch '{branch}' in {self.working_dir}"
             )
-            if str(branch) == str(self.active_branch):
+            if str(branch) == self.active_branch_or_none:
                 logging.info(f"Already on branch '{branch}'")
                 return
 
@@ -164,19 +173,32 @@ def commit_changes(
     """
     repo = RepoWrapper(repo_path)
 
-    if repo.is_dirty(untracked_files=True) or (
-        str(repo.active_branch) != "main"
-        and str(repo.active_branch) != "master"
-        and str(repo.active_branch) != branch
-    ):
-        raise FailedToSwitchBranchError(
-            repo,
-            branch,
+    if repo.is_dirty(untracked_files=True):
+        raise FailedToSwitchBranchError(repo, branch, "Repo is dirty.")
+
+    try:
+        active_branch = repo.active_branch
+        if str(active_branch) not in ["main", "master", branch]:
+            raise FailedToSwitchBranchError(
+                repo,
+                branch,
+                (
+                    "Your active branch should be main/master or the ticket"
+                    f" branch but it is {repo.active_branch}"
+                ),
+            )
+    except TypeError:
+        # Head is detached
+
+        # Treat this as ok because our way of updating submodules leaves them
+        # in a detached head state. Which probably only occurs if someone just
+        # updated their submodules.
+
+        logging.warning(
             (
-                f"Please make sure git status is clean in"
-                f" '{repo.working_tree_dir}' and that the active branch"
-                f" is main/master or {branch}."
-            ),
+                f"Git HEAD is detached in {repo.working_tree_dir}."
+                " Treating this as OK."
+            )
         )
 
     repo.switch(branch)

@@ -184,3 +184,4 @@ class IBEXDeviceGenerator:
                 f"[red]{e}",
                 extra={"markup": True, "highlighter": None},
             )
+            raise e
