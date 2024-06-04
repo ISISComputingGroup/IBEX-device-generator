@@ -8,14 +8,21 @@ version = "0.0.1"
 authors = [
   { name="Zsolt Kebel", email="25386639+zsoltkebel@users.noreply.github.com" },
 ]
-description = "IBEX device generator."
+description = "Easily generate starter code to develop an IOC in the IBEX instrument control system."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  # How mature is this project?
+  "Development Status :: 3 - Alpha",
+
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Code Generators",
+
+  "License :: OSI Approved :: BSD License",
+
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
 ]
 dependencies = [
   "GitPython >= 3.1.43",
