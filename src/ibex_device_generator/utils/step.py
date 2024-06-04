@@ -122,7 +122,8 @@ def add_opi_to_gui(device: DeviceInfo) -> None:
     try:
         add_device_opi_to_opi_info(device)
         modified_files = [os.path.join(OPI_RESOURCES, "opi_info.xml")]
-    except DuplicateOPIKeyError:
+    except DuplicateOPIKeyError as e:
+        logging.warning(e)
         modified_files = []
 
     log_file_changes(added_files=added_files, modified_files=modified_files)
@@ -140,7 +141,7 @@ def log_file_changes(
             + rich_print(
                 tree_from_paths(sorted(added_files, key=str.lower)),
             ),
-            extra={"markup": True},
+            extra={"markup": True, "highlighter": None},
         )
     if modified_files:
         logging.info(
@@ -148,7 +149,7 @@ def log_file_changes(
             + rich_print(
                 tree_from_paths(sorted(modified_files, key=str.lower)),
             ),
-            extra={"markup": True},
+            extra={"markup": True, "highlighter": None},
         )
     if removed_files:
         logging.info(
@@ -156,5 +157,5 @@ def log_file_changes(
             + rich_print(
                 tree_from_paths(sorted(removed_files, key=str.lower)),
             ),
-            extra={"markup": True},
+            extra={"markup": True, "highlighter": None},
         )

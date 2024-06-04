@@ -150,11 +150,16 @@ class IBEXDeviceGenerator:
 
         try:
             if self.use_git and repo_path and commit_msg:
-                logging.info(f"Running '{commit_msg}' with git...")
+                logging.info(
+                    f"Running '{commit_msg}' with git...",
+                    extra={"highlighter": None},
+                )
                 with commit_changes(repo_path, self.ticket_branch, commit_msg):
                     action(*args, **kwargs)
             else:
-                logging.info(f"Running '{commit_msg}'...")
+                logging.info(
+                    f"Running '{commit_msg}'...", extra={"highlighter": None}
+                )
                 action(*args, **kwargs)
 
             logging.info(
@@ -165,7 +170,7 @@ class IBEXDeviceGenerator:
         except IBEXDeviceGeneratorError as e:
             logging.error(
                 f"[red]{e}",
-                extra={"markup": True},
+                extra={"markup": True, "highlighter": None},
             )
 
             if self.interactive and self.retry:
@@ -173,3 +178,9 @@ class IBEXDeviceGenerator:
                 self.add_step(repo_path, commit_msg, action, *args, **kwargs)
             else:
                 raise IBEXDeviceGeneratorError("Failed.")
+
+        except Exception as e:
+            logging.exception(
+                f"[red]{e}",
+                extra={"markup": True, "highlighter": None},
+            )

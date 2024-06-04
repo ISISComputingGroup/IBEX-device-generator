@@ -77,7 +77,7 @@ def add_device_opi_to_opi_info(device: DeviceInfo) -> None:
 
     """
     log = logging.getLogger("rich")
-    log.info("Adding template information to opi info")
+    log.info("Adding entry for device screen into opi_info.xml")
 
     opi_info_path = os.path.join(OPI_RESOURCES, "opi_info.xml")
     with open(opi_info_path) as f:

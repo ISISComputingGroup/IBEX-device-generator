@@ -16,11 +16,11 @@ from git import (
     NoSuchPathError,
     Repo,
 )
-from rich.prompt import Confirm
 
 from ibex_device_generator.exc import (
     CannotOpenRepoError,
     FailedToSwitchBranchError,
+    NothingToCommitError,
 )
 
 
@@ -92,22 +92,20 @@ class RepoWrapper(Repo):
             msg: The commit message
 
         """
-        logging.debug(
+        logging.info(
             (
-                f"Attempting to commit all changes and untracked files in"
+                f"Committing all changes and untracked files in"
                 f" '{self.working_tree_dir}'."
             )
         )
 
-        try:
+        if self.is_dirty(untracked_files=True):
             self.git.add(A=True)
             self.git.commit(m=msg)
-        except (OSError, GitCommandError) as e:
-            raise RuntimeError(
-                "Error whilst creating commit in {}: {}".format(
-                    self.working_dir, e
-                )
-            )
+            sha = self.head.object.hexsha
+            logging.info(f"Commit {sha[:9]} made")
+        else:
+            raise NothingToCommitError(self)
 
     def create_submodule(self, name: str, url: str, path: str) -> None:
         """Create submodule in this repository.
@@ -154,7 +152,6 @@ def commit_changes(
     repo_path: str,
     branch: str,
     msg: str,
-    confirm_commit: bool = True,
 ) -> Generator[RepoWrapper, None, None]:
     """Switches to a branch and makes commit.
 
@@ -186,11 +183,4 @@ def commit_changes(
 
     yield repo
 
-    if not confirm_commit or Confirm.ask(
-        (
-            f"Commit all changes and untracked files in"
-            f" '{repo.working_tree_dir}'?"
-        ),
-        default="y",
-    ):
-        repo.commit_all(msg)
+    repo.commit_all(msg)
