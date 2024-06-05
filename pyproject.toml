@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ibex_device_generator"
-version = "0.0.1"
+version = "1.0.0"
 authors = [
   { name="Zsolt Kebel", email="25386639+zsoltkebel@users.noreply.github.com" },
 ]
