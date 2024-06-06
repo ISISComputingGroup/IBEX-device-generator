@@ -79,7 +79,7 @@ def grant_permission(
         logging.info(
             (
                 f"Permission '{permission}' granted to team '{team_name}'"
-                " for repository '{repository_name}'."
+                f" for repository '{repository_name}'."
             )
         )
     else:
