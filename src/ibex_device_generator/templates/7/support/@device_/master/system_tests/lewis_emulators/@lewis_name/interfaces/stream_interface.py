@@ -14,7 +14,7 @@ class @{lewis_emulator_device_class_name}StreamInterface(StreamInterface):
         super(@{lewis_emulator_device_class_name}StreamInterface, self).__init__()
         # Commands that we expect via serial during normal operation
         self.commands = {
-            CmdBuilder(self.catch_all).arg("^#9.*$$").build()  # Catch-all command for debugging
+            CmdBuilder(self.catch_all).arg("^#9.*$").build()  # Catch-all command for debugging
         }
 
     def handle_error(self, request, error):
