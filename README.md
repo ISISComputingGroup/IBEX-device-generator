@@ -83,8 +83,6 @@ To test changes made to this package you can install it directly with pip via:
 pip install .
 ```
 
-__Git workflow: commit/branch off of `dev` for new features, bugfixes and merge `dev` to `main` on new release.__
-
 ### Run Tests
 
 
