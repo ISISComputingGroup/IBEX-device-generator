@@ -15,7 +15,7 @@
 
 
 ```
-pip install git+https://github.com/ISISComputingGroup/IBEX-device-generator.git
+pip install git+https://github.com/ISISComputingGroup/IBEX-device-generator.git@latest_release
 ```
 
 [More details on pip version control system (VCS) support...](https://pip.pypa.io/en/stable/topics/vcs-support/)
@@ -76,6 +76,7 @@ When using a template most of these substitutions must be present.
 
 ## Development
 
+[Contributing Guidelines](./CONTRIBUTING.md)
 
 To test changes made to this package you can install it directly with pip via:
 ```
