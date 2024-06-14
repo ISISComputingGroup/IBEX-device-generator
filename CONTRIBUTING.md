@@ -21,6 +21,7 @@ __For developers within the team with push access to the repository.__
 ### Issue a New Release
 
 1. Following the major-minor-patch versioning decide the next version number based on the changes since last version.
+You can do this at https://github.com/ISISComputingGroup/IBEX-device-generator/compare/latest_release...HEAD
 1. Change the version number accordingly in the [pyproject.toml](https://github.com/ISISComputingGroup/IBEX-device-generator/blob/main/pyproject.toml#L7) file.
 1. Create a new annotated tag with the new version number in the form of `v0.0.0`. e.g. `git tag -a v1.0.3` then push it to GitHub via `git push origin tag v1.0.3`
 1. [Create a new release](https://github.com/ISISComputingGroup/IBEX-device-generator/releases/new) on GitHub pointing at the tag just created.
