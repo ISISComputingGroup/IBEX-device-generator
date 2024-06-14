@@ -9,6 +9,7 @@ from ibex_device_generator.exc import (
     InvalidIOCNameError,
 )
 from ibex_device_generator.utils.device_info import (
+    DeviceInfo,
     is_valid_device_count,
     is_valid_device_name,
     is_valid_ioc_name,
@@ -53,7 +54,7 @@ def parse_arguments() -> Namespace:
         "--device_count",
         type=device_count_checker,
         help="Number of duplicate device IOCs to generate.",
-        default=2,
+        default=DeviceInfo.default_device_count,
     )
     parser.add_argument(
         "--use_git",

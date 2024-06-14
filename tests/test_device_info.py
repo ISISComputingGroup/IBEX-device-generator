@@ -7,6 +7,7 @@ import ibex_device_generator.utils.placeholders as p
 from ibex_device_generator.exc import (
     InvalidDeviceNameError,
     InvalidIOCNameError,
+    ReassignPlaceholderError,
 )
 from ibex_device_generator.paths import EPICS, EPICS_SUPPORT
 from ibex_device_generator.utils.device_info import (
@@ -92,3 +93,15 @@ class DeviceInfoTests(TestCase):
         with self.assertRaises(InvalidDeviceNameError):
             # Non-ascii character
             DeviceInfo("ND1", "New Device Â")
+
+    def test_value_reassignment(self) -> None:
+        """Test that values other than specified cannot be reassigned."""
+        # This is rudamentary, might want to make it more robust by
+        # i.e checking all values in DeviceInfo.editable_substitutions
+        with self.assertRaises(ReassignPlaceholderError):
+            self.device[p.IOC_NAME] = "Something Else"
+
+        try:
+            self.device[p.INDEX] = "03"
+        except ReassignPlaceholderError:
+            self.fail("Should be able to reassign INDEX in substitutions.")

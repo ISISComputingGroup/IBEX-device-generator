@@ -21,10 +21,14 @@ class DeviceInfo(dict):
     and device count.
     """
 
+    default_device_count = 2
     editable_substitutions = {p.INDEX}
 
     def __init__(
-        self, ioc_name: str, device_name: str, device_count: int = 1
+        self,
+        ioc_name: str,
+        device_name: str,
+        device_count: int = default_device_count,
     ) -> None:
         """Make a device info dictionary.
 
@@ -34,7 +38,7 @@ class DeviceInfo(dict):
             ioc_name: The name of the IOC
                 (Must be between 1 and 8 alphanumeric characters)
             device_name: The longer, more descriptive name of the device.
-            device_count: Number of IOCs to generate. Defaults to 1
+            device_count: Number of IOCs to generate.
 
         Raises:
             InvalidIOCNameError: if IOC name is invalid.
@@ -77,7 +81,7 @@ class DeviceInfo(dict):
 
     def __setitem__(self, key: Any, value: Any) -> None:
         """Disable value reassignment."""
-        if self.get(key) and key not in self.editable_substitutions:
+        if self.get(key) and key not in DeviceInfo.editable_substitutions:
             # Prevent modifying values other than INDEX
             raise ReassignPlaceholderError(key)
         else:
