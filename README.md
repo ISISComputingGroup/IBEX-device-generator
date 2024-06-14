@@ -58,13 +58,13 @@ The GitHub token is needed for the script to be able to create repository. GitHu
 ## Templates
 
 
-The templates for the file structure generation can be found in the `templates` directory.
+The templates for the file structure generation can be found in the [`src/ibex_device_generator/templates/`](./src/ibex_device_generator/templates) directory.
 
 
 ### Placeholders
 
 
-See [src/ibex_device_generator/utils/placeholders.py](./src/ibex_device_generator/utils/placeholders.py) for a complete list of placeholders and their descriptions.
+See [`src/ibex_device_generator/utils/placeholders.py`](./src/ibex_device_generator/utils/placeholders.py) for a complete list of placeholders and their descriptions.
 
 Placeholders in the templates can be anywhere (including file names, directory names or file content). They are preceeded by the '@' delimiter. When the placeholder is not followed by a space use @{placeholder}.
 
