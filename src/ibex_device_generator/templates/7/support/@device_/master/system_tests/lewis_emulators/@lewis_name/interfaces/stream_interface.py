@@ -5,7 +5,7 @@ from lewis.utils.replies import conditional_reply
 
 
 @@has_log
-class @{lewis_emulator_device_class_name}StreamInterface(StreamInterface):  #pyright: ignore
+class @{lewis_emulator_device_class_name}StreamInterface(StreamInterface):
     
     in_terminator = "\r\n"
     out_terminator = "\r\n"
