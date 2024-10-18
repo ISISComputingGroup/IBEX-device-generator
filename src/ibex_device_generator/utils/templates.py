@@ -49,8 +49,8 @@ def get_template(*pathsegments: str) -> Traversable:
 
 
 def populate_template_file(
-    template: Traversable, into: PathLike, substitutions: dict[str, str]
-) -> PathLike:
+    template: Traversable, into: PathLike | str, substitutions: dict[str, str]
+) -> PathLike | str:
     """Populate a single template file into a directory on the disk.
 
     Args:
@@ -92,7 +92,7 @@ def populate_template_file(
 
 
 def populate_template_dir(
-    template: Traversable, into: PathLike, substitutions: dict[str, str]
+    template: Traversable, into: PathLike | str, substitutions: dict[str, str]
 ) -> list[PathLike]:
     """Populate a template directory into a location on the disk.
 

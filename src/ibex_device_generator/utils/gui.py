@@ -3,7 +3,7 @@
 import logging
 import os
 
-from lxml import etree
+import lxml.etree as etree
 from lxml.etree import ElementTree
 
 from ibex_device_generator.exc import IBEXDeviceGeneratorError

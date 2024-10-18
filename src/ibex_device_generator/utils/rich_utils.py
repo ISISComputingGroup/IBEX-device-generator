@@ -18,7 +18,7 @@ def rich_print(*objects: Any) -> str:
 
 # TODO suggest a function to rich public
 # something like
-def tree_from_paths(paths: list[PathLike]) -> Tree:
+def tree_from_paths(paths: list[PathLike] | list[str]) -> Tree:
     """..."""
     root = os.path.commonpath([os.path.dirname(path) for path in paths])
 

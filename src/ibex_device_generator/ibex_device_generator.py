@@ -1,6 +1,7 @@
 """Main file."""
 
 import logging
+from typing import Callable, ParamSpec
 
 from rich.prompt import Confirm
 
@@ -24,6 +25,8 @@ from ibex_device_generator.utils.step import (
     create_submodule,
     create_submodule_structure,
 )
+
+P = ParamSpec("P")
 
 
 class IBEXDeviceGenerator:
@@ -121,9 +124,9 @@ class IBEXDeviceGenerator:
 
     def add_step(
         self,
-        repo_path: str,
+        repo_path: str | None,
         commit_msg: str,
-        action: callable,
+        action: Callable[P, None],
         *args,
         **kwargs,
     ) -> None:
@@ -137,7 +140,7 @@ class IBEXDeviceGenerator:
             commit_msg: the commit message
             action: the function to execute as this step
             *args: any positional arguments for the action
-            **kwargs: any keywoprd arguments for the action
+            **kwargs: any keyword arguments for the action
 
         """
         if self.interactive and not Confirm.ask(
