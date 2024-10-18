@@ -12,7 +12,8 @@ StrOrBytesPath: TypeAlias = str | bytes | PathLike[str] | PathLike[bytes]
 
 
 def run_command(
-    command: StrOrBytesPath | Sequence[StrOrBytesPath], working_dir: str
+    command: StrOrBytesPath | Sequence[StrOrBytesPath],
+    working_dir: str | PathLike,
 ) -> int:
     """Run a command using subprocess, waits for completion.
 
@@ -24,9 +25,14 @@ def run_command(
         The exit code after running the command
 
     """
-    logging.info(
-        "Running command {} from {}".format(" ".join(command), working_dir)
-    )
+    if type(command) is Sequence:
+        logging.info(
+            "Running command {} from {}".format(
+                " ".join([str(c) for c in command]), working_dir
+            )
+        )
+    else:
+        logging.info("Running command {} from {}".format(command, working_dir))
     with open(devnull, "w") as null_out:
         cmd = subprocess.Popen(
             command,

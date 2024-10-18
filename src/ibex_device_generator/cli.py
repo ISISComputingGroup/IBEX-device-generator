@@ -11,7 +11,7 @@ from ibex_device_generator.utils.arg_parser import parse_arguments
 from ibex_device_generator.utils.device_info import DeviceInfo
 
 
-def _configure_logging(level: str = logging.INFO) -> None:
+def _configure_logging(level: str = str(logging.INFO)) -> None:
     logging.basicConfig(
         level=level,
         format="%(message)s",

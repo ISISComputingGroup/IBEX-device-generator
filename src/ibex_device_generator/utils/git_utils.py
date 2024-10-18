@@ -92,7 +92,7 @@ class RepoWrapper(Repo):
                 self.git.checkout("-b", branch)
 
         except GitCommandError as e:
-            raise FailedToSwitchBranchError(self, branch, e)
+            raise FailedToSwitchBranchError(self, branch, str(e))
 
     def commit_all(self, msg: str) -> None:
         """Commit all changes and untracked files in the repository.
@@ -116,7 +116,7 @@ class RepoWrapper(Repo):
         else:
             raise NothingToCommitError(self)
 
-    def create_submodule(self, name: str, url: str, path: str) -> None:
+    def create_submodule(self, name: str, url: str, path: str) -> None:  # pyright: ignore
         """Create submodule in this repository.
 
         Args:

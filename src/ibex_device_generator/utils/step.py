@@ -130,16 +130,18 @@ def add_opi_to_gui(device: DeviceInfo) -> None:
 
 
 def log_file_changes(
-    added_files: list[PathLike] = [],
-    modified_files: list[PathLike] = [],
-    removed_files: list[PathLike] = [],
+    added_files: list[PathLike] | list[str] = [],
+    modified_files: list[PathLike] | list[str] = [],
+    removed_files: list[PathLike] | list[str] = [],
 ) -> None:
     """Print file trees to the user."""
     if added_files:
         logging.info(
             "[green]Added the following files:\n"
             + rich_print(
-                tree_from_paths(sorted(added_files, key=str.lower)),
+                tree_from_paths(
+                    sorted([str(f) for f in added_files], key=str.lower)
+                ),
             ),
             extra={"markup": True, "highlighter": None},
         )
@@ -147,7 +149,9 @@ def log_file_changes(
         logging.info(
             "[yellow]Modified the following files:\n"
             + rich_print(
-                tree_from_paths(sorted(modified_files, key=str.lower)),
+                tree_from_paths(
+                    sorted([str(f) for f in modified_files], key=str.lower)
+                ),
             ),
             extra={"markup": True, "highlighter": None},
         )
@@ -155,7 +159,9 @@ def log_file_changes(
         logging.info(
             "[red]Removed the following files:\n"
             + rich_print(
-                tree_from_paths(sorted(removed_files, key=str.lower)),
+                tree_from_paths(
+                    sorted([str(f) for f in removed_files], key=str.lower)
+                ),
             ),
             extra={"markup": True, "highlighter": None},
         )

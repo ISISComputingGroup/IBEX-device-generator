@@ -4,8 +4,10 @@ import logging
 from os.path import join
 
 
-def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
-    """Add entry to prefixed list in llist of strings.
+def _add_entry_to_list(
+    text: list[str], list_name: str, entry: str
+) -> list[str]:
+    """Add entry to prefixed list in list of strings.
 
     Check if 'list_name += entry' already exists in text and add it if not.
 

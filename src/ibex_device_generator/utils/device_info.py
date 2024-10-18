@@ -101,7 +101,7 @@ class DeviceInfo(dict):
         if not 0 < index < 100:
             raise InvalidDeviceCountError(index)
 
-        return "{}-IOC-{:02d}".format(self._ioc_name, index)
+        return "{}-IOC-{:02d}".format(self[p.IOC_NAME], index)
 
     def ioc_boot_path(self, index: int) -> str:
         """Get IOCs indexed booth path.
