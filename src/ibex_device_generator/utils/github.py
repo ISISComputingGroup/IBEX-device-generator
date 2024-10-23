@@ -42,12 +42,7 @@ def create_github_repository(device: DeviceInfo, github_token: str) -> None:
     )
 
     if response.status_code == requests.codes["created"]:
-        logging.info(
-            (
-                f"Repository {response.json().get('html_url')}"
-                " created successfully."
-            )
-        )
+        logging.info((f"Repository {response.json().get('html_url')}" " created successfully."))
     else:
         raise FailedToCreateGitHubRepositoryError(
             ORGANIZATION_NAME, device[GITHUB_REPO_NAME], response.reason
@@ -83,14 +78,10 @@ def grant_permission(
             )
         )
     else:
-        raise FailedToGrantPermissionError(
-            permission, repository_name, response.reason
-        )
+        raise FailedToGrantPermissionError(permission, repository_name, response.reason)
 
 
-def grant_permissions_for_github_repository(
-    device: DeviceInfo, github_token: str
-) -> None:
+def grant_permissions_for_github_repository(device: DeviceInfo, github_token: str) -> None:
     """Grant permissions to teams for the GitHub repository.
 
     Args:
@@ -131,9 +122,7 @@ def does_github_issue_exist_and_is_open(issue_number: int) -> bool:
     return result.ok and result.json()["state"] == "open"
 
 
-def github_repo_url(
-    repo_name: str, organisation: str = ORGANIZATION_NAME
-) -> str:
+def github_repo_url(repo_name: str, organisation: str = ORGANIZATION_NAME) -> str:
     """Get repo url for repo of the organisation.
 
     Args:
