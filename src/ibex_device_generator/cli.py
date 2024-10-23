@@ -26,9 +26,7 @@ def main() -> None:
 
     _configure_logging(level=args.log_level)
 
-    device = DeviceInfo(
-        args.ioc_name, args.device_name, device_count=args.device_count
-    )
+    device = DeviceInfo(args.ioc_name, args.device_name, device_count=args.device_count)
 
     IBEXDeviceGenerator(
         device, args.use_git, args.github_token, args.ticket, args.interactive

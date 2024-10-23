@@ -127,8 +127,8 @@ class IBEXDeviceGenerator:
         repo_path: str | None,
         commit_msg: str,
         action: Callable[P, None],
-        *args,
-        **kwargs,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> None:
         """Add a generator step.
 
@@ -143,12 +143,8 @@ class IBEXDeviceGenerator:
             **kwargs: any keyword arguments for the action
 
         """
-        if self.interactive and not Confirm.ask(
-            f"Do '{commit_msg}'?", default="y"
-        ):
-            logging.debug(
-                ":right_arrow:  Skipping step.", extra={"markup": True}
-            )
+        if self.interactive and not Confirm.ask(f"Do '{commit_msg}'?", default="y"):
+            logging.debug(":right_arrow:  Skipping step.", extra={"markup": True})
             return
 
         try:
@@ -160,9 +156,7 @@ class IBEXDeviceGenerator:
                 with commit_changes(repo_path, self.ticket_branch, commit_msg):
                     action(*args, **kwargs)
             else:
-                logging.info(
-                    f"Running '{commit_msg}'...", extra={"highlighter": None}
-                )
+                logging.info(f"Running '{commit_msg}'...", extra={"highlighter": None})
                 action(*args, **kwargs)
 
             logging.info(

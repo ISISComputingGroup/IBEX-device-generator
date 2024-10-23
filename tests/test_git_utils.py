@@ -19,12 +19,7 @@ class GitUtilTests(TestCase):
             try:
                 RepoWrapper(tmpdir)
             except CannotOpenRepoError:
-                self.fail(
-                    (
-                        "Repo should be able to initialise in a git tracked"
-                        " directory."
-                    )
-                )
+                self.fail(("Repo should be able to initialise in a git tracked" " directory."))
 
     def test_repo_fails_to_init_in_non_git_directory(self):
         with TemporaryDirectory() as tmpdir:

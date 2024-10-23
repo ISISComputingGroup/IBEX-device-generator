@@ -48,11 +48,7 @@ def create_submodule(device: DeviceInfo) -> None:
 
     log_file_changes(
         added_files=added_files,
-        modified_files=(
-            [os.path.join(EPICS_SUPPORT, "Makefile")]
-            if did_modify_makefile
-            else []
-        ),
+        modified_files=([os.path.join(EPICS_SUPPORT, "Makefile")] if did_modify_makefile else []),
     )
 
 
@@ -79,17 +75,11 @@ def create_ioc_from_template(device: DeviceInfo) -> None:
         subs = device
         subs[p.INDEX] = "{:02d}".format(i)
 
-        added_files.extend(
-            populate_template_dir(get_template("5_2"), EPICS, subs)
-        )
+        added_files.extend(populate_template_dir(get_template("5_2"), EPICS, subs))
 
     # Add IOC to Makefile
-    did_modify_makefile = add_to_makefile_list(
-        IOC_ROOT, "IOCDIRS", device[p.IOC_NAME]
-    )
-    modified_files = (
-        [os.path.join(IOC_ROOT, "Makefile")] if did_modify_makefile else []
-    )
+    did_modify_makefile = add_to_makefile_list(IOC_ROOT, "IOCDIRS", device[p.IOC_NAME])
+    modified_files = [os.path.join(IOC_ROOT, "Makefile")] if did_modify_makefile else []
 
     # Run make
     try:
@@ -139,9 +129,7 @@ def log_file_changes(
         logging.info(
             "[green]Added the following files:\n"
             + rich_print(
-                tree_from_paths(
-                    sorted([str(f) for f in added_files], key=str.lower)
-                ),
+                tree_from_paths(sorted([str(f) for f in added_files], key=str.lower)),
             ),
             extra={"markup": True, "highlighter": None},
         )
@@ -149,9 +137,7 @@ def log_file_changes(
         logging.info(
             "[yellow]Modified the following files:\n"
             + rich_print(
-                tree_from_paths(
-                    sorted([str(f) for f in modified_files], key=str.lower)
-                ),
+                tree_from_paths(sorted([str(f) for f in modified_files], key=str.lower)),
             ),
             extra={"markup": True, "highlighter": None},
         )
@@ -159,9 +145,7 @@ def log_file_changes(
         logging.info(
             "[red]Removed the following files:\n"
             + rich_print(
-                tree_from_paths(
-                    sorted([str(f) for f in removed_files], key=str.lower)
-                ),
+                tree_from_paths(sorted([str(f) for f in removed_files], key=str.lower)),
             ),
             extra={"markup": True, "highlighter": None},
         )

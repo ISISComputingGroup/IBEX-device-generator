@@ -27,9 +27,7 @@ def run_command(
     """
     if type(command) is Sequence:
         logging.info(
-            "Running command {} from {}".format(
-                " ".join([str(c) for c in command]), working_dir
-            )
+            "Running command {} from {}".format(" ".join([str(c) for c in command]), working_dir)
         )
     else:
         logging.info("Running command {} from {}".format(command, working_dir))

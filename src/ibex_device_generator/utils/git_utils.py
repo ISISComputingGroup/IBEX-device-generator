@@ -8,7 +8,7 @@ import os
 import subprocess
 from contextlib import contextmanager
 from os.path import relpath
-from typing import Generator
+from typing import Any, Generator
 
 from git import (
     GitCommandError,
@@ -31,8 +31,8 @@ class RepoWrapper(Repo):
         self,
         path: str,
         init: bool = False,
-        *args,
-        **kwargs,
+        *args: Any,  # noqa: ANN401
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Attach to existing git repository or initialise a new.
 
@@ -50,13 +50,13 @@ class RepoWrapper(Repo):
 
         """
         try:
-            super().__init__(path, *args, **kwargs)
+            super().__init__(path=path, *args, **kwargs)
         except (InvalidGitRepositoryError, NoSuchPathError):
             # This might be overkill for our use case but here we go
             if init:
                 os.makedirs(os.path.dirname(path), exist_ok=True)
                 self.init(path, initial_branch="main")
-                super().__init__(path, *args, **kwargs)
+                super().__init__(path=path, *args, **kwargs)
             else:
                 raise CannotOpenRepoError(path)
 
@@ -77,9 +77,7 @@ class RepoWrapper(Repo):
 
         """
         try:
-            logging.info(
-                f"Switching to branch '{branch}' in {self.working_dir}"
-            )
+            logging.info(f"Switching to branch '{branch}' in {self.working_dir}")
             if str(branch) == self.active_branch_or_none:
                 logging.info(f"Already on branch '{branch}'")
                 return
@@ -102,10 +100,7 @@ class RepoWrapper(Repo):
 
         """
         logging.info(
-            (
-                f"Committing all changes and untracked files in"
-                f" '{self.working_tree_dir}'."
-            )
+            (f"Committing all changes and untracked files in" f" '{self.working_tree_dir}'.")
         )
 
         if self.is_dirty(untracked_files=True):
@@ -133,9 +128,7 @@ class RepoWrapper(Repo):
             # /refs/heads/ prefix to any branch you give it,
             # and this breaks the repo checks.
 
-            cmd = (
-                f"git submodule add -b {branch} --name {name} {url} {sub_path}"
-            )
+            cmd = f"git submodule add -b {branch} --name {name} {url} {sub_path}"
             subprocess.run(
                 cmd,
                 cwd=self.working_tree_dir,
@@ -143,16 +136,11 @@ class RepoWrapper(Repo):
             )
 
         except subprocess.CalledProcessError as e:
-            logging.error(
-                "Cannot add {} as a submodule, error: {}".format(path, e)
-            )
+            logging.error("Cannot add {} as a submodule, error: {}".format(path, e))
             raise e
         except Exception as e:
             raise RuntimeError(
-                (
-                    f"Unknown error {e} of type {type(e)} whilst"
-                    f" creating submodule in {path}"
-                )
+                (f"Unknown error {e} of type {type(e)} whilst" f" creating submodule in {path}")
             )
 
 
@@ -195,10 +183,7 @@ def commit_changes(
         # updated their submodules.
 
         logging.warning(
-            (
-                f"Git HEAD is detached in {repo.working_tree_dir}."
-                " Treating this as OK."
-            )
+            (f"Git HEAD is detached in {repo.working_tree_dir}." " Treating this as OK.")
         )
 
     repo.switch(branch)
