@@ -8,7 +8,8 @@ O.*/
 test-reports
 envPaths
 cdCommands
-dllPath.bat
+dllPath*.bat
+dllCopy.bat
 runIOC.bat
 runIOC.sh
 relPaths.sh
