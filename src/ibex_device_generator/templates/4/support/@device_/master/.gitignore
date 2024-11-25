@@ -1,10 +1,10 @@
 O.*/
-/db
-/bin
-/dbd
-/include
-/lib
-/templates
+/db/
+/bin/
+/dbd/
+/include/
+/lib/
+/templates/
 test-reports
 envPaths
 cdCommands
