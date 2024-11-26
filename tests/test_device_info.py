@@ -33,10 +33,7 @@ class DeviceInfoTests(TestCase):
             self.assertIn(
                 value,
                 self.device,
-                msg=(
-                    f"Key '{name}' ('{value}') is missing from the"
-                    " device info substitutions."
-                ),
+                msg=(f"Key '{name}' ('{value}') is missing from the" " device info substitutions."),
             )
         # <- Check all keys in device info substitutions exists
         # in substitution_keys
@@ -61,9 +58,7 @@ class DeviceInfoTests(TestCase):
             p.DEVICE_PROTOCOL_NAME: "new_device_1",
             p.LEWIS_DEVICE_CLASS_NAME: "NewDevice1",
             p.SUPPORT_PATH: join(EPICS_SUPPORT, "new_device_1"),
-            p.SUPPORT_MASTER_PATH: join(
-                EPICS_SUPPORT, "new_device_1", "master"
-            ),
+            p.SUPPORT_MASTER_PATH: join(EPICS_SUPPORT, "new_device_1", "master"),
             p.GITHUB_REPO_NAME: "EPICS-New_Device_1",
             p.DEVICE_COUNT: 4,
             p.IOC_PATH: join(EPICS, "ioc", "master", "ND1"),

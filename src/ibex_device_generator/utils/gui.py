@@ -3,7 +3,7 @@
 import logging
 import os
 
-from lxml import etree
+import lxml.etree as etree
 from lxml.etree import ElementTree
 
 from ibex_device_generator.exc import IBEXDeviceGeneratorError
@@ -60,13 +60,9 @@ def _generate_opi_entry(device: DeviceInfo) -> ElementTree:
         ElementTree template based on the device info
 
     """
-    concrete_opi_xml_str = DeviceTemplate(template_opi_entry_xml_str).apply(
-        device
-    )
+    concrete_opi_xml_str = DeviceTemplate(template_opi_entry_xml_str).apply(device)
 
-    return etree.fromstring(
-        concrete_opi_xml_str, etree.XMLParser(remove_blank_text=True)
-    )
+    return etree.fromstring(concrete_opi_xml_str, etree.XMLParser(remove_blank_text=True))
 
 
 def add_device_opi_to_opi_info(device: DeviceInfo) -> None:
