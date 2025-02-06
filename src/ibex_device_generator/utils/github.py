@@ -113,6 +113,12 @@ def grant_permissions_for_github_repository(
         "maintain",
         device[GITHUB_REPO_NAME],
     )
+    grant_permission(
+        github_token,
+        "ICP-Read",
+        "read",
+        device[GITHUB_REPO_NAME],
+    )
 
 
 def does_github_issue_exist_and_is_open(issue_number: int) -> bool:
