@@ -79,7 +79,7 @@ class DeviceInfo(dict):
         self[p.INDEX]                         = "01" # noqa
         # fmt: on
 
-    def __setitem__(self, key: Any, value: Any) -> None:
+    def __setitem__(self, key: Any, value: Any) -> None:  # noqa - need to use any to fully overload
         """Disable value reassignment."""
         if self.get(key) and key not in DeviceInfo.editable_substitutions:
             # Prevent modifying values other than INDEX
@@ -101,7 +101,7 @@ class DeviceInfo(dict):
         if not 0 < index < 100:
             raise InvalidDeviceCountError(index)
 
-        return "{}-IOC-{:02d}".format(self._ioc_name, index)
+        return "{}-IOC-{:02d}".format(self[p.IOC_NAME], index)
 
     def ioc_boot_path(self, index: int) -> str:
         """Get IOCs indexed booth path.
