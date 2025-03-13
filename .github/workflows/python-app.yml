@@ -3,11 +3,7 @@
 
 name: Lint and unit test Python application
 
-on:
-  push:
-    branches: [ "*" ]
-  pull_request:
-    branches: [ "main" ]
+on: [pull_request, workflow_call]
 
 permissions:
   contents: read
