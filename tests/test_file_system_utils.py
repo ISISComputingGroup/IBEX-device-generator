@@ -18,14 +18,10 @@ class FileSystemUtilsTests(TestCase):
         ]
 
         # Act
-        actual_output = _add_entry_to_list(
-            iocdirs_input, list_name, device_name
-        )
+        actual_output = _add_entry_to_list(iocdirs_input, list_name, device_name)
 
         # Assert
-        self.assertEqual(
-            "{} += {}\n".format(list_name, device_name), actual_output[1]
-        )
+        self.assertEqual("{} += {}\n".format(list_name, device_name), actual_output[1])
 
     def test_GIVEN_entry_list_name_and_realistic_make_text_WHEN_add_entry_to_list_text_THEN_entry_exists_in_list_text(
         self,
@@ -49,9 +45,7 @@ class FileSystemUtilsTests(TestCase):
         iocdirs_input = [line.format(list_name) for line in iocdirs_input]
 
         # Act
-        actual_output = _add_entry_to_list(
-            iocdirs_input, list_name, device_name
-        )
+        actual_output = _add_entry_to_list(iocdirs_input, list_name, device_name)
 
         # Assert
         self.assertTrue(any([device_name in line for line in actual_output]))
@@ -78,9 +72,7 @@ class FileSystemUtilsTests(TestCase):
         iocdirs_input = [line.format(list_name) for line in iocdirs_input]
 
         # Act
-        actual_output = _add_entry_to_list(
-            iocdirs_input, list_name, device_name
-        )
+        actual_output = _add_entry_to_list(iocdirs_input, list_name, device_name)
 
         # Assert
         self.assertEqual(iocdirs_input, actual_output)

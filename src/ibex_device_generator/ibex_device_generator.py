@@ -1,6 +1,7 @@
 """Main file."""
 
 import logging
+from typing import Callable, ParamSpec
 
 from rich.prompt import Confirm
 
@@ -24,6 +25,8 @@ from ibex_device_generator.utils.step import (
     create_submodule,
     create_submodule_structure,
 )
+
+P = ParamSpec("P")
 
 
 class IBEXDeviceGenerator:
@@ -121,11 +124,11 @@ class IBEXDeviceGenerator:
 
     def add_step(
         self,
-        repo_path: str,
+        repo_path: str | None,
         commit_msg: str,
-        action: callable,
-        *args,
-        **kwargs,
+        action: Callable[P, None],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> None:
         """Add a generator step.
 
@@ -137,15 +140,11 @@ class IBEXDeviceGenerator:
             commit_msg: the commit message
             action: the function to execute as this step
             *args: any positional arguments for the action
-            **kwargs: any keywoprd arguments for the action
+            **kwargs: any keyword arguments for the action
 
         """
-        if self.interactive and not Confirm.ask(
-            f"Do '{commit_msg}'?", default="y"
-        ):
-            logging.debug(
-                ":right_arrow:  Skipping step.", extra={"markup": True}
-            )
+        if self.interactive and not Confirm.ask(f"Do '{commit_msg}'?", default="y"):
+            logging.debug(":right_arrow:  Skipping step.", extra={"markup": True})
             return
 
         try:
@@ -157,9 +156,7 @@ class IBEXDeviceGenerator:
                 with commit_changes(repo_path, self.ticket_branch, commit_msg):
                     action(*args, **kwargs)
             else:
-                logging.info(
-                    f"Running '{commit_msg}'...", extra={"highlighter": None}
-                )
+                logging.info(f"Running '{commit_msg}'...", extra={"highlighter": None})
                 action(*args, **kwargs)
 
             logging.info(

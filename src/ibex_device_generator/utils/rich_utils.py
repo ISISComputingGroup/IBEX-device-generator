@@ -2,13 +2,12 @@
 
 import os
 from os import PathLike
-from typing import Any
 
 from rich.console import Console
 from rich.tree import Tree
 
 
-def rich_print(*objects: Any) -> str:
+def rich_print(*objects: Tree) -> str:
     """..."""
     console = Console()
     with console.capture() as capture:
@@ -18,7 +17,7 @@ def rich_print(*objects: Any) -> str:
 
 # TODO suggest a function to rich public
 # something like
-def tree_from_paths(paths: list[PathLike]) -> Tree:
+def tree_from_paths(paths: list[PathLike] | list[str]) -> Tree:
     """..."""
     root = os.path.commonpath([os.path.dirname(path) for path in paths])
 

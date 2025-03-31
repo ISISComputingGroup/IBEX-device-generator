@@ -23,8 +23,7 @@ def parse_arguments() -> Namespace:
     """Parse cli arguments."""
     parser = argparse.ArgumentParser(
         description=(
-            "IBEX Device IOC Generator. "
-            "Generate boilerplate code for IBEX device support."
+            "IBEX Device IOC Generator. " "Generate boilerplate code for IBEX device support."
         ),
     )
     parser.add_argument(
@@ -68,10 +67,7 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "--github_token",
         type=str,
-        help=(
-            'GitHub token with "repo" scope. '
-            "Use to create support repository."
-        ),
+        help=('GitHub token with "repo" scope. ' "Use to create support repository."),
     )
     parser.add_argument(
         "--log_level",
@@ -124,7 +120,5 @@ def ticket_number_checker(val: str) -> int:
     """Check ticket number validity."""
     ticket_number = int(val)
     if not does_github_issue_exist_and_is_open(ticket_number):
-        raise ArgumentTypeError(
-            f"GitHub issue {ticket_number} is closed or does not exist."
-        )
+        raise ArgumentTypeError(f"GitHub issue {ticket_number} is closed or does not exist.")
     return ticket_number

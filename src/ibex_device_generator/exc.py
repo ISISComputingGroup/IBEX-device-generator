@@ -89,8 +89,7 @@ class InvalidDeviceNameError(IBEXDeviceGeneratorError):
 
     def __str__(self) -> str:
         return (
-            "'%s' is an invalid device name,"
-            " it can only cantain ASCII characters." % self.name
+            "'%s' is an invalid device name," " it can only cantain ASCII characters." % self.name
         )
 
 
@@ -101,10 +100,7 @@ class InvalidDeviceCountError(IBEXDeviceGeneratorError):
         self.count = count
 
     def __str__(self) -> str:
-        return (
-            "'%d' is an invalid device count. This must be between 1 and 99."
-            % self.count
-        )
+        return "'%d' is an invalid device count. This must be between 1 and 99." % self.count
 
 
 class ReassignPlaceholderError(IBEXDeviceGeneratorError):
@@ -114,10 +110,7 @@ class ReassignPlaceholderError(IBEXDeviceGeneratorError):
         self.placeholder = placeholder
 
     def __str__(self) -> str:
-        return (
-            "Cannot reassign value of '%s' after device info instantiation."
-            % self.placeholder
-        )
+        return "Cannot reassign value of '%s' after device info instantiation." % self.placeholder
 
 
 # Git related
@@ -131,8 +124,7 @@ class CannotOpenRepoError(IBEXDeviceGeneratorError):
 
     def __str__(self) -> str:
         return (
-            "Cannot open git repository at %s."
-            " Check if git repo exists at location." % self.path
+            "Cannot open git repository at %s." " Check if git repo exists at location." % self.path
         )
 
 

@@ -4,8 +4,8 @@ import logging
 from os.path import join
 
 
-def _add_entry_to_list(text: str, list_name: str, entry: str) -> str:
-    """Add entry to prefixed list in llist of strings.
+def _add_entry_to_list(text: list[str], list_name: str, entry: str) -> list[str]:
+    """Add entry to prefixed list in list of strings.
 
     Check if 'list_name += entry' already exists in text and add it if not.
 
@@ -51,9 +51,7 @@ def add_to_makefile_list(directory: str, list_name: str, entry: str) -> bool:
 
     """
     logging.info(
-        "Adding {} to list {} in Makefile for directory {}".format(
-            entry, list_name, directory
-        )
+        "Adding {} to list {} in Makefile for directory {}".format(entry, list_name, directory)
     )
     makefile = join(directory, "Makefile")
     with open(makefile) as f:
@@ -63,10 +61,7 @@ def add_to_makefile_list(directory: str, list_name: str, entry: str) -> bool:
 
     if old_lines == new_lines:
         logging.warn(
-            (
-                f"Entry '{entry}' is already added to list '{list_name}' in"
-                f" '{makefile}'."
-            )
+            (f"Entry '{entry}' is already added to list '{list_name}' in" f" '{makefile}'.")
         )
         return False
 

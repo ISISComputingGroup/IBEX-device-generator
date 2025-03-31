@@ -21,21 +21,12 @@ class PlaceholderTests(TestCase):
     def test_all_placeholders_in_templates_are_present(self) -> None:
         """Check templates directory for unknown placeholder."""
         with TemporaryDirectory() as tmpdir:
-            substitutions = {
-                key: "value" for key in self.placeholders.values()
-            }
+            substitutions = {key: "value" for key in self.placeholders.values()}
 
             try:
-                populate_template_dir(
-                    get_template(), join(gettempdir(), tmpdir), substitutions
-                )
+                populate_template_dir(get_template(), join(gettempdir(), tmpdir), substitutions)
             except KeyError as e:
-                self.fail(
-                    (
-                        "There is an undefined placeholder in the"
-                        f" templates directory: {e}"
-                    )
-                )
+                self.fail(("There is an undefined placeholder in the" f" templates directory: {e}"))
 
 
 def get_placeholders() -> dict[str, str]:
@@ -47,8 +38,6 @@ def get_placeholders() -> dict[str, str]:
 
     """
     placeholders = {
-        name: value
-        for (name, value) in vars(keys_file).items()
-        if not name.startswith("__")
+        name: value for (name, value) in vars(keys_file).items() if not name.startswith("__")
     }
     return placeholders
