@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Easily generate starter code to develop an IOC in the IBEX instrument control system."
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 requires-python = ">=3.8"
 classifiers = [
   # How mature is this project?
