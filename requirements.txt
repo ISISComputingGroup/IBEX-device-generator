@@ -1,5 +1,5 @@
 GitPython==3.1.50
-lxml==5.2.1
+lxml==6.1.0
 Requests==2.32.4
 rich==13.7.1
 ruff==0.4.7
