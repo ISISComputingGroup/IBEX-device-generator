@@ -11,7 +11,7 @@ from ibex_device_generator.utils.arg_parser import parse_arguments
 from ibex_device_generator.utils.device_info import DeviceInfo
 
 
-def _configure_logging(level: str = logging.INFO) -> None:
+def _configure_logging(level: str = str(logging.INFO)) -> None:
     logging.basicConfig(
         level=level,
         format="%(message)s",
@@ -26,9 +26,7 @@ def main() -> None:
 
     _configure_logging(level=args.log_level)
 
-    device = DeviceInfo(
-        args.ioc_name, args.device_name, device_count=args.device_count
-    )
+    device = DeviceInfo(args.ioc_name, args.device_name, device_count=args.device_count)
 
     IBEXDeviceGenerator(
         device, args.use_git, args.github_token, args.ticket, args.interactive
