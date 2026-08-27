@@ -1,0 +1,3 @@
+{
+  "ignore": ["./src/ibex_device_generator/templates"]
+}

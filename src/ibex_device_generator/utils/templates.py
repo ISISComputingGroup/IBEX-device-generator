@@ -49,8 +49,8 @@ def get_template(*pathsegments: str) -> Traversable:
 
 
 def populate_template_file(
-    template: Traversable, into: PathLike, substitutions: dict[str, str]
-) -> PathLike:
+    template: Traversable, into: PathLike | str, substitutions: dict[str, str]
+) -> PathLike | str:
     """Populate a single template file into a directory on the disk.
 
     Args:
@@ -74,25 +74,20 @@ def populate_template_file(
     )
 
     logging.debug(
-        (
-            f"Using template file '{template}'\n"
-            f"to populate '{substituted_destination}'"
-        )
+        (f"Using template file '{template}'\n" f"to populate '{substituted_destination}'")
     )
 
     os.makedirs(os.path.dirname(substituted_destination), exist_ok=True)
 
     with open(substituted_destination, "w") as file:
-        substituted_content = DeviceTemplate(template.read_text()).substitute(
-            substitutions
-        )
+        substituted_content = DeviceTemplate(template.read_text()).substitute(substitutions)
 
         file.write(substituted_content)
     return substituted_destination
 
 
 def populate_template_dir(
-    template: Traversable, into: PathLike, substitutions: dict[str, str]
+    template: Traversable, into: PathLike | str, substitutions: dict[str, str]
 ) -> list[PathLike]:
     """Populate a template directory into a location on the disk.
 
@@ -129,9 +124,5 @@ def populate_template_dir(
             substituted_destination = os.path.join(
                 into, DeviceTemplate(item.name).substitute(substitutions)
             )
-            files.extend(
-                populate_template_dir(
-                    item, substituted_destination, substitutions
-                )
-            )
+            files.extend(populate_template_dir(item, substituted_destination, substitutions))
     return files
